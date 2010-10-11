@@ -6,11 +6,11 @@
    (closeb :initarg :close :reader closeb :type single-float)
    (sqnb :initform 0 :accessor sqnb)	;SQN of last N bars.
    (atrb :initform 0 :accessor atrb)	;ATR of last N bars.
-   (trb :initform 0 :accessor trb)	;TR of this bar.)
-  (:documentation "This object defines the price-points and other qualities of a single bar."))
+   (trb :initform 0 :accessor trb)))	;TR of this bar.
+;  (:documentation "This object defines the price-points and other qualities of a single bar."))
 
 ;; The data in this vector is ordered from oldest to newest.
-(defparameter *array* (make-array 200 :fill-pointer 0 :adjustable t :element-type 'bar))
+(defparameter *array* (make-array 60000 :fill-pointer 0 :adjustable t :element-type 'bar))
 
 ;; This function reads in the csv-file and places objects of the 'bar' class into *array*
 (defun read-ohlc (file-name array-name)
@@ -21,13 +21,13 @@
 	   while line do
 	     (setf temp (cl-ppcre:split "," line))
 	     (vector-push-extend (make-instance 'bar 
-						:open (read-from-string (third temp)) 
-						:high (read-from-string (fourth temp))
-						:low (read-from-string (fifth temp)) 
-						:close (read-from-string (sixth temp)))
+						:open (read-from-string (first temp)) 
+						:high (read-from-string (third temp))
+						:low (read-from-string (second temp)) 
+						:close (read-from-string (fourth temp)))
 				 array-name)))))
 
 ;Data from http://www.fxhistoricaldata.com/
 
 ;; Perform actions
-(read-ohlc "/home/ravi/lvmlv/lisp/GBPUSD60.csv" *array*)	;Random - median = $10057 won.  0.04% lose.  Amazing.
+(read-ohlc "/home/ravi/trading/GBPUSD_hour.csv" *array*)	;Random - median = $10057 won.  0.04% lose.  Amazing.
