@@ -6,8 +6,10 @@
    (closeb :initarg :close :reader closeb :type single-float)
    (sqnb :initform 0 :accessor sqnb)	;SQN of last N bars.
    (atrb :initform 0 :accessor atrb)	;ATR of last N bars.
-   (trb :initform 0 :accessor trb)))	;TR of this bar.
-;  (:documentation "This object defines the price-points and other qualities of a single bar."))
+   (ma-20 :initform 0 :accessor ma-20)	;MA-20 of the close.
+   (ma-diff-close :accessor ma-diff-close) ;MA minus close (For NN input).
+   (trb :initform 0 :accessor trb))	;TR of this bar.
+  (:documentation "This object defines the price-points and other qualities of a single bar."))
 
 ;; The data in this vector is ordered from oldest to newest.
 (defparameter *array* (make-array 60000 :fill-pointer 0 :adjustable t :element-type 'bar))

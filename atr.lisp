@@ -42,3 +42,30 @@
 	    (dotimes (column-iterator (array-dimension array 1))
 	      (push (aref array row-iterator column-iterator) row))
 	    (format stream "~&~{~A,~}" (reverse row)))))))
+
+;; Calculate moving average.
+(defun moving-average (data n)
+  "This function calculates the moving average of 'ma-source' values for 'n' periods in array 'data & puts the result in 'ma-period' of the bar-element in the 'data' array."
+  (do ((i n (1+ i))
+       (length-of-array (length data)))
+      ((= i length-of-array))
+    (setf (ma-20 (aref data i))
+	  (/ (do ((x (- i n) (incf x))
+		  (sum 0))
+		 ((= x i) sum)
+	       (incf sum (closeb (aref data x))))
+	     n))))
+
+(moving-average *array* 20)
+
+;; Calculate moving average difference from close
+(defun ma-difference-from-close (data n)
+  ""
+  (do ((i n (1+ i))
+       (length-of-array (length data)))
+      ((= i length-of-array))
+    (setf (ma-diff-close (aref data i))
+	  (- (ma-20 (aref data i))
+	     (closeb (aref data i))))))
+
+(ma-difference-from-close *array* 20)
