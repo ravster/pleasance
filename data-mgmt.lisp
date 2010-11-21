@@ -8,7 +8,8 @@
    (atrb :initform 0 :accessor atrb)	;ATR of last N bars.
    (ma-20 :initform 0 :accessor ma-20)	;MA-20 of the close.
    (ma-diff-close :accessor ma-diff-close) ;MA minus close (For NN input).
-   (trb :initform 0 :accessor trb))	;TR of this bar.
+   (trb :initform 0 :accessor trb)	;TR of this bar.
+   (+5close-diff :initform 0 :accessor +5close-diff)) ;Difference between the close of 5 periods in the future and right now.
   (:documentation "This object defines the price-points and other qualities of a single bar."))
 
 ;; The data in this vector is ordered from oldest to newest.
