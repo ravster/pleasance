@@ -1,4 +1,7 @@
 ;; Find the true range for each bar and place into object.
+
+(in-package :ravi.nn0)
+
 (defun calculate-true-range (data)
   "This function will traverse a vector of BAR objects and calculate the true range for each."
   (loop for i from 1 below (length data)
@@ -39,7 +42,7 @@
 	  (let ((row ()))
 	    (dotimes (column-iterator (array-dimension array 1))
 	      (push (aref array row-iterator column-iterator) row))
-k	    (format stream "~&~{~A,~}" (reverse row)))))))
+	    (format stream "~&~{~A,~}" (reverse row)))))))
 
 ;; Calculate moving average.
 (defun moving-average (data n)

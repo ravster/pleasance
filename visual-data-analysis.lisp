@@ -1,8 +1,6 @@
 ;;;; These functions extract some data from the bar-array into a vector, which can then be viewed (As a csv-file) by gnumeric.
 
-;; This is the average ATR
-;(defparameter *average-atr* nil
-;  "This is the average ATR over a set of data (Usually the training data).")
+(in-package :ravi.nn0)
 
 (defparameter *vector-of-data* (make-array 50000 :fill-pointer 0 :adjustable t :element-type 'float))
 
@@ -14,7 +12,7 @@
     (vector-push-extend (funcall accessor-function (aref data i))
 			*vector-of-data*)))
 
-(vector-of-data *array* 20 #'ma-20)
+;(vector-of-data *array* 20 #'ma-20)
 
 (defun move-decimal-point (array-name shift-by)
   "Move the decimal point 'shift-by' places to the right for each value in the array 'array-name'.  This is done so that we can see the 'pips' instead of seeing a bunch of float-numbers.  Its easier on the eyes."
@@ -25,6 +23,6 @@
 	  (* (aref array-name i)
 	     (expt 10 shift-by)))))
 
-(move-decimal-point *vector-of-data* 4)
+;(move-decimal-point *vector-of-data* 4)
 
-(array-to-csv *vector-of-data* "vectorofdata.csv")
+;(array-to-csv *vector-of-data* "vectorofdata.csv")

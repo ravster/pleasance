@@ -1,4 +1,7 @@
 ;; This class holds all the variables that we shall be working with, for each bar of the data.
+
+(in-package :ravi.nn0)
+
 (defclass bar ()
   ((openb :initarg :open :reader openb :type single-float)
    (high :initarg :high :reader high :type single-float)
@@ -24,10 +27,10 @@
 	   while line do
 	     (setf temp (cl-ppcre:split "," line))
 	     (vector-push-extend (make-instance 'bar 
-						:open (read-from-string (first temp)) 
-						:high (read-from-string (third temp))
-						:low (read-from-string (second temp)) 
-						:close (read-from-string (fourth temp)))
+						:open (read-from-string (fourth temp)) 
+						:high (read-from-string (sixth temp))
+						:low (read-from-string (fifth temp)) 
+						:close (read-from-string (seventh temp)))
 				 array-name)))))
 
 ;Data from http://www.fxhistoricaldata.com/
