@@ -12,40 +12,76 @@
 
 (defparameter weight-i1h1 (random 3))
 
+(defparameter weight-h0 (random 3))
+
+(defparameter weight-h1 (random 3))
+
 ;; Define rate of learning
 
 (defparameter rate-of-learning (/ (1+ (random 10))
 				     1000))
 
-(defun node-i0 (input)
-  ""
-  (tanh (* input
-	   weight-i0h0)))
+;; Define the nodes
 
-(defun node-h0 (input)
+(defun node-i0 (input-index)
   ""
-  (tanh (* input
-	   weight-h0o0)))
+  (aref training-set input-index 0))
 
-(defun main-run ()
+(defun node-i1 (input-index)
   ""
-  (let ((output-i0)
-	(output-h0))
-    (format t "~&weight-i0: ~A~&weight-h0: ~A~&------------" weight-i0h0 weight-h0o0)
-    (loop for i from 0 below 5000	;We have 5000 data-points in the training set.
-	 do
-	 (setf output-i0 (node-i0 (aref training-set i 0))
-	       output-h0 (node-h0 output-i0))
-       ;; Saved the outputs of the nodes.
-	 (incf weight-h0o0 (* rate-of-learning-h0
-			     (- (aref training-set i 2)
-				output-h0)))
-       ;; Increment the weight by the rate of learning times (What the output should have been) minus (What the output was).
-       ;; I don't think doing a simple subtraction & multiplication is wise, since we are talking of a hyperbolic function here and the input itself could be either positive or negative.
-	 (incf weight-i0h0 (* rate-of-learning-i0
-			    (- (aref training-set i 2)
-			       output-h0)))
-       ;; Same as above.
-       ;; Also, I've used the difference in the outputs here since I don't know how to use anything else (For now).  I could use a group of people who are willing _and_ able to be working on this with me.  A team (Small one) would be quite good right now.
-	 )
-    (format t "~&weight-i0: ~A~&weight-h0: ~A" weight-i0h0 weight-h0o0)))
+  (aref training-set input-index 1))
+
+(defun node-h0 (input-index)
+  ""
+  (tanh (+ (* weight-i0h0 (node-i0 input-index))
+	   (* weight-i1h0 (node-i1 input-index)))))
+
+(defun node-h1 (input-index)
+  ""
+  (tanh (+ (* weight-i0h1 (node-i0 input-index))
+	   (* weight-i1h1 (node-i1 input-index)))))
+
+(defun node-output (input-index)
+  ""
+  (tanh (+ (* weight-h0 (node-h0 input-index))
+	   (* weight-h1 (node-h1 input-index)))))
+
+(defun error-gradient-of-output-node (input-index)
+  ""
+  (* (- 1 (expt (node-output input-index)
+		2))			  ;1 - y^2
+     (- (aref training-set input-index 2) ;Answer we want
+	(node-output input-index))))	  ;Answer we have right now.
+
+(defun work-horse ()
+  ""
+  (loop for i from 0 below 5000	;Due to 5000 datum in the training set.
+     do
+     ;; Update the weights to the output layer.
+       (incf weight-h0 (+ rate-of-learning
+			  (node-h0 i)
+			  (error-gradient-of-output-node i)))
+
+       (incf weight-h1 (+ rate-of-learning
+			  (node-h1 i)
+			  (error-gradient-of-output-node i)))
+
+     ;; Update the weights to the hidden layer.
+       (incf weight-i0h0 (+ rate-of-learning
+			    (node-i0 i)
+			    (* weight-h0 ;This is the error gradient
+			       (error-gradient-of-output-node i))))
+       (incf weight-i1h0 (+ rate-of-learning
+			    (node-i1 i)
+			    (* weight-h0 ;Error gradient for H0
+			       (error-gradient-of-output-node i))))
+       (incf weight-i0h1 (+ rate-of-learning
+			    (node-i0 i)
+			    (* weight-h1 ;Error gradient for H1
+			       (error-gradient-of-output-node i))))
+       (incf weight-i1h1 (+ rate-of-learning
+			    (node-i1 i)
+			    (* weight-h1 ;Error gradient for H1
+			       (error-gradient-of-output-node i))))
+       ))				;End loop and defun
+
