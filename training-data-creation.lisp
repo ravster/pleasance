@@ -43,7 +43,7 @@
 (score-+5closediff *array* training-set)
 
 (defun score-atrb (raw-data output-array)
-  ""
+  "Normalized score of ATR."
   (loop for i from 0 below 5000
        with denominator = (/ (+ (abs (loop for i from 20 below 5020
 					  maximize (atrb (aref raw-data i))))
@@ -57,3 +57,24 @@
 		denominator))))
 
 (score-atrb *array* training-set)
+
+;;;; Here we shall create the validation set data.
+
+(defparameter validation-set (make-array 5000)
+  "This dataset will be the validation set, to make sure we are not overtraining the data.")
+
+(defun validation-set-data-creation (raw-data output-array)
+  "Normalize '+5close-diff' (Close of 5 periods in the future and the present close)in the bar-array and place the normalized values in the out-put array."
+  (loop for i from 0 below 5000
+     with denominator = (/ (+ (abs (loop for i from 5020 below 10020
+				      maximize (+5close-diff (aref raw-data i))))
+			      (abs (loop for i from 5020 below 10020
+				      minimize (+5close-diff (aref raw-data i)))))
+			   2)
+        ;Denominator gives us the "range" of values of the raw numbers we are trying to normalize.  Range is now between -1 & 1.
+     do
+     (setf (aref output-array i)
+	   (/ (+5close-diff (aref raw-data (+ i 5020)))
+	      denominator))))
+
+(validation-set-data-creation *array* validation-set)
