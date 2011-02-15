@@ -94,7 +94,7 @@
 			    (* weight-h0 ;Error gradient for H0
 			       (- 1 (expt (node-h0 dataset i)
 					  2))
-			       (error-gradient-of-output-node i))))
+			       (error-gradient-of-output-node dataset i))))
        (incf weight-i0h1 (* rate-of-learning
 			    node-i0
 			    (* weight-h1 ;Error gradient for H1
@@ -126,4 +126,4 @@
   "This function will find out what the total error is in the training set compared to the currect network output."
   (loop for i from 0 below 5000
      sum (abs      (- (aref training-set i 2) ;Answer we want
-			  (node-output i))))) ;Answer we have right now.
+			  (node-output training-set i))))) ;Answer we have right now.
