@@ -2,94 +2,49 @@
 
 (in-package :ravi.nn0)
 
-;;; Lets set up the data structure first.
+;; Normalize data
+;; Min-Max normalization
+;; Score = (max-score - min-score) * ((Data - min-data)/(Max-data - min-data)) + min-score
+
+(defun score (input &key min-output range-output min-input range-input)
+  "Function that takes a score and calculates the true-value, or vice-versa."
+  (+ min-output
+     (* range-output
+	(/ (- input min-input)
+	   range-input))))
+
+(defun create-scores (bar-array output-array &key (min-output -1) (range-output 2) function-name (index-shift 20) (start-index 0) (end-index 5000) output-array-index)
+  "Use the min-max normalization to create scores of input data for the neural network."
+  (loop for i below 5000
+     with max-input = (loop for j from (+ start-index index-shift) below (+ end-index index-shift)
+			 maximize (funcall function-name (aref bar-array j)))
+     with min-input = (loop for j from (+ start-index index-shift) below (+ end-index index-shift)
+			 minimize (funcall function-name (aref bar-array j)))
+     with range-input = (- max-input min-input)
+     do
+     (setf (aref output-array i output-array-index)
+	   (score (funcall function-name (aref bar-array (+ i index-shift))) 
+		  :min-output min-output :range-output range-output :min-input min-input :range-input range-input))))
+
 (defparameter training-set (make-array '(5000 3))
   "This is the training set data.")
 
-;; Normalize data
-;; Min-Max normalization
-;; Score = (max_range - min_range) * ((Data - min_data)/(Max_data - min_data)) + min_range
-
-(defun score-madiffclose (raw-data output-array)
-  "Normalize the data of (MA - closing price) and place it in the first column of the training-set array."
-  (loop for i from 0 below 5000
-     with max-range = 1
-     with min-range = -1
-     with distance-range = (- max-range min-range)
-     with max-data = (loop for i from 20 below 5020
-			maximize (ma-diff-close (aref raw-data i)))
-     with min-data = (loop for i from 20 below 5020
-			minimize (ma-diff-close (aref raw-data i)))
-     with distance-data = (- max-data min-data)
-     do
-     (setf (aref output-array i 0)
-	   (+ min-range
-	      (* distance-range
-		 (/ (- (ma-diff-close (aref raw-data (+ i 20)))
-		       min-data)
-		    distance-data))))))		       
-
-(score-madiffclose *array* training-set)
-
-(defun score-+5closediff (raw-data output-array)
-  "Normalize '+5close-diff' (Close of 5 periods in the future and the present close)in the bar-array and place the normalized values in the out-put array."
-  (loop for i from 0 below 5000
-     with max-range = 1
-     with min-range = -1
-     with distance-range = (- max-range min-range)
-     with max-data = (loop for i from 20 below 5020
-			maximize (+5close-diff (aref raw-data i)))
-     with min-data = (loop for i from 20 below 5020
-			minimize (+5close-diff (aref raw-data i)))
-     with distance-data = (- max-data min-data)
-     do
-     (setf (aref output-array i 2)
-	   (+ min-range
-	      (* distance-range
-		 (/ (- (+5close-diff (aref raw-data (+ i 20)))
-		       min-data)
-		    distance-data))))))
-
-(score-+5closediff *array* training-set)
-
-(defun score-atrb (raw-data output-array)
-  "Normalized score of ATR."
-  (loop for i from 0 below 5000
-     with max-range = 1
-     with min-range = -1
-     with distance-range = (- max-range min-range)
-     with max-data = (loop for i from 20 below 5020
-			maximize (atrb (aref raw-data i)))
-     with min-data = (loop for i from 20 below 5020
-			minimize (atrb (aref raw-data i)))
-     with distance-data = (- max-data min-data)
-     do
-     (setf (aref output-array i 1)
-	   (+ min-range
-	      (* distance-range
-		 (/ (- (atrb (aref raw-data (+ i 20)))
-		       min-data)
-		    distance-data))))))
-
-(score-atrb *array* training-set)
+;; create scores for MA - close for each bar
+(create-scores *array* training-set :function-name #'ma-diff-close :output-array-index 0)
+;; create scores for atr for each bar
+(create-scores *array* training-set :function-name #'atrb :output-array-index 1)
+;; create scores for +5close - presentclose
+(create-scores *array* training-set :function-name #'+5close-diff :output-array-index 2)
 
 ;;;; Here we shall create the validation set data.
 
-(defparameter validation-set (make-array 5000)
+(defparameter validation-set (make-array '(5000 3))
   "This dataset will be the validation set, to make sure we are not overtraining the data.")
 
-(defun validation-set-data-creation (raw-data output-array)
-  "Normalize '+5close-diff' (Close of 5 periods in the future and the present close)in the bar-array and place the normalized values in the out-put array."
-  (loop for i from 0 below 5000
-     with denominator = (/ (+ (abs (loop for i from 5020 below 10020
-				      maximize (+5close-diff (aref raw-data i))))
-			      (abs (loop for i from 5020 below 10020
-				      minimize (+5close-diff (aref raw-data i)))))
-			   2)
-        ;Denominator gives us the "range" of values of the raw numbers we are trying to normalize.  Range is now between -1 & 1.
-     do
-     (setf (aref output-array i)
-	   (/ (+5close-diff (aref raw-data (+ i 5020)))
-	      denominator))))
-
-(validation-set-data-creation *array* validation-set)
+;; create scores for validation-set
+;; +5close-diff
+(create-scores *array* validation-set :function-name #'+5close-diff :output-array-index 2 :start-index 5000 :end-index 10000)
+;; madiff-close
+(create-scores *array* validation-set :function-name #'ma-diff-close :output-array-index 0)
+;; atrb
+(create-scores *array* validation-set :function-name #'atrb :output-array-index 1)
