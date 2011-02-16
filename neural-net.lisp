@@ -3,22 +3,23 @@
 (in-package :ravi.nn0)
 
 ;; Define weights
-(defparameter weight-i0h0 (random 3)
-  "From atr-node to first hidden node.")
-
+(defparameter weight-i0h0 (random 3))
 (defparameter weight-i0h1 (random 3))
+(defparameter weight-i0h2 (random 3))
+(defparameter weight-i0h3 (random 3))
+(defparameter weight-i0h4 (random 3))
 
 (defparameter weight-i1h0 (random 3))
-
 (defparameter weight-i1h1 (random 3))
+(defparameter weight-i1h2 (random 3))
+(defparameter weight-i1h3 (random 3))
+(defparameter weight-i1h4 (random 3))
 
 (defparameter weight-h0 (random 3))
-
 (defparameter weight-h1 (random 3))
-
-(defparameter weight-i0h2 (random 3))
-(defparameter weight-i1h2 (random 3))
 (defparameter weight-h2 (random 3))
+(defparameter weight-h3 (random 3))
+(defparameter weight-h4 (random 3))
 
 ;; Define rate of learning
 
@@ -50,11 +51,24 @@
   (tanh (+ (* weight-i0h2 (node-i0 dataset input-index))
 	   (* weight-i1h2 (node-i1 dataset input-index)))))
 
+(defun node-h3 (dataset input-index)
+  ""
+  (tanh (+ (* weight-i0h3 (node-i0 dataset input-index))
+	   (* weight-i1h3 (node-i1 dataset input-index)))))
+
+(defun node-h4 (dataset input-index)
+  ""
+  (tanh (+ (* weight-i0h4 (node-i0 dataset input-index))
+	   (* weight-i1h4 (node-i1 dataset input-index)))))
+
 (defun node-output (dataset input-index)
   ""
   (tanh (+ (* weight-h0 (node-h0 dataset input-index))
 	   (* weight-h1 (node-h1 dataset input-index))
-	   (* weight-h2 (node-h2 dataset input-index)))))
+	   (* weight-h2 (node-h2 dataset input-index))
+;	   (* weight-h3 (node-h3 dataset input-index))
+;	   (* weight-h4 (node-h4 dataset input-index)))))
+)))
 
 (defun error-gradient-of-output-node (dataset input-index)
   ""
@@ -63,60 +77,44 @@
      (- (aref training-set input-index 2) ;Answer we want
 	(node-output dataset input-index))))	  ;Answer we have right now.
 
+(defun update-weight-from-hidden-node (node weight-from-node dataset incrementor)
+  "Update the weights for the named hidden nodes."
+  (incf weight-from-node (* rate-of-learning
+			    (funcall node dataset incrementor)
+			    (error-gradient-of-output-node dataset incrementor))))
+
+(defun update-weight-from-input-node (input-node hidden-node input-node-weight hidden-node-weight dataset incrementor)
+  "Update the weight for the named input node."
+  (incf input-node-weight (* rate-of-learning
+			     (funcall input-node dataset incrementor)
+			     hidden-node-weight ;Error gradient for hidden node.
+			     (- 1 (expt (funcall hidden-node dataset incrementor)
+					2)) ;1 - y^2
+			     (error-gradient-of-output-node dataset incrementor))))
+
 (defun work-horse (dataset)
   "This function does the learning.  It updates the weights amongst the nodes."
   (loop for i from 0 below 5000	;Due to 5000 datum in the training set.
      do
      ;; Update the weights to the output layer.
-       (incf weight-h0 (* rate-of-learning
-			  (node-h0 dataset i)
-			  (error-gradient-of-output-node dataset i)))
-
-       (incf weight-h1 (* rate-of-learning
-			  (node-h1 dataset i)
-			  (error-gradient-of-output-node dataset i)))
-
-       (incf weight-h2 (* rate-of-learning
-			  (node-h2 dataset i)
-			  (error-gradient-of-output-node dataset i)))
+       (update-weight-from-hidden-node #'node-h0 weight-h0 dataset i)
+       (update-weight-from-hidden-node #'node-h1 weight-h1 dataset i)
+       (update-weight-from-hidden-node #'node-h2 weight-h2 dataset i)
+;       (update-weight-from-hidden-node #'node-h3 weight-h3 dataset i)
+;       (update-weight-from-hidden-node #'node-h4 weight-h4 dataset i)
 
      ;; Update the weights to the hidden layer.
-       (incf weight-i0h0 (* rate-of-learning
-			    (node-i0 dataset i)
-			    (* weight-h0 ;This is the error gradient
-			       (- 1 (expt (node-h0 dataset i)
-					  2))
-			       (error-gradient-of-output-node dataset i))))
-       (incf weight-i1h0 (* rate-of-learning
-			    (node-i1 dataset i)
-			    (* weight-h0 ;Error gradient for H0
-			       (- 1 (expt (node-h0 dataset i)
-					  2))
-			       (error-gradient-of-output-node dataset i))))
-       (incf weight-i0h1 (* rate-of-learning
-			    (node-i0 dataset i)
-			    (* weight-h1 ;Error gradient for H1
-			       (- 1 (expt (node-h1 dataset i)
-					  2))
-			       (error-gradient-of-output-node dataset i))))
-       (incf weight-i1h1 (* rate-of-learning
-			    (node-i1 dataset i)
-			    (* weight-h1 ;Error gradient for H1
-			       (- 1 (expt (node-h1 dataset i)
-					  2))
-			       (error-gradient-of-output-node dataset i))))
-       (incf weight-i0h2 (* rate-of-learning
-			    (node-i0 dataset i)
-			    (* weight-h2 ;Error gradient for H2
-			       (- 1 (expt (node-h2 dataset i)
-					  2))
-			       (error-gradient-of-output-node dataset i))))
-       (incf weight-i1h2 (* rate-of-learning
-			    (node-i1 dataset i)
-			    (* weight-h2 ;Error gradient for H2
-			       (- 1 (expt (node-h2 dataset i)
-					  2))
-			       (error-gradient-of-output-node dataset i))))
+       (update-weight-from-input-node #'node-i0 #'node-h0 weight-i0h0 weight-h0 dataset i)
+       (update-weight-from-input-node #'node-i0 #'node-h1 weight-i0h1 weight-h1 dataset i)
+       (update-weight-from-input-node #'node-i0 #'node-h2 weight-i0h2 weight-h2 dataset i)
+;       (update-weight-from-input-node #'node-i0 #'node-h3 weight-i0h3 weight-h3 dataset i)
+;       (update-weight-from-input-node #'node-i0 #'node-h4 weight-i0h4 weight-h4 dataset i)
+
+       (update-weight-from-input-node #'node-i1 #'node-h0 weight-i1h0 weight-h0 dataset i)
+       (update-weight-from-input-node #'node-i1 #'node-h1 weight-i1h1 weight-h1 dataset i)
+       (update-weight-from-input-node #'node-i1 #'node-h2 weight-i1h2 weight-h2 dataset i)
+;       (update-weight-from-input-node #'node-i1 #'node-h3 weight-i1h3 weight-h3 dataset i)
+;       (update-weight-from-input-node #'node-i1 #'node-h4 weight-i1h4 weight-h4 dataset i)
 
        ))				;End loop and defun
 
