@@ -66,8 +66,6 @@
 (defun work-horse (dataset)
   "This function does the learning.  It updates the weights amongst the nodes."
   (loop for i from 0 below 5000	;Due to 5000 datum in the training set.
-       with node-i0 = (node-i0 dataset i)
-       and node-i1 = (node-i1 dataset i)
      do
      ;; Update the weights to the output layer.
        (incf weight-h0 (* rate-of-learning
@@ -84,37 +82,37 @@
 
      ;; Update the weights to the hidden layer.
        (incf weight-i0h0 (* rate-of-learning
-			    node-i0
+			    (node-i0 dataset i)
 			    (* weight-h0 ;This is the error gradient
 			       (- 1 (expt (node-h0 dataset i)
 					  2))
 			       (error-gradient-of-output-node dataset i))))
        (incf weight-i1h0 (* rate-of-learning
-			    node-i1
+			    (node-i1 dataset i)
 			    (* weight-h0 ;Error gradient for H0
 			       (- 1 (expt (node-h0 dataset i)
 					  2))
 			       (error-gradient-of-output-node dataset i))))
        (incf weight-i0h1 (* rate-of-learning
-			    node-i0
+			    (node-i0 dataset i)
 			    (* weight-h1 ;Error gradient for H1
 			       (- 1 (expt (node-h1 dataset i)
 					  2))
 			       (error-gradient-of-output-node dataset i))))
        (incf weight-i1h1 (* rate-of-learning
-			    node-i1
+			    (node-i1 dataset i)
 			    (* weight-h1 ;Error gradient for H1
 			       (- 1 (expt (node-h1 dataset i)
 					  2))
 			       (error-gradient-of-output-node dataset i))))
        (incf weight-i0h2 (* rate-of-learning
-			    node-i0
+			    (node-i0 dataset i)
 			    (* weight-h2 ;Error gradient for H2
 			       (- 1 (expt (node-h2 dataset i)
 					  2))
 			       (error-gradient-of-output-node dataset i))))
        (incf weight-i1h2 (* rate-of-learning
-			    node-i1
+			    (node-i1 dataset i)
 			    (* weight-h2 ;Error gradient for H2
 			       (- 1 (expt (node-h2 dataset i)
 					  2))
@@ -122,8 +120,8 @@
 
        ))				;End loop and defun
 
-(defun aggregate-error-in-training-set ()
+(defun aggregate-error-in-set (dataset)
   "This function will find out what the total error is in the training set compared to the currect network output."
   (loop for i from 0 below 5000
-     sum (abs      (- (aref training-set i 2) ;Answer we want
-			  (node-output training-set i))))) ;Answer we have right now.
+     sum (abs      (- (aref dataset i 2)	      ;Answer we want
+		      (node-output dataset i))))) ;Answer we have right now.

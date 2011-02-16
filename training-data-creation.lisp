@@ -45,6 +45,27 @@
 ;; +5close-diff
 (create-scores *array* validation-set :function-name #'+5close-diff :output-array-index 2 :start-index 5000 :end-index 10000)
 ;; madiff-close
-(create-scores *array* validation-set :function-name #'ma-diff-close :output-array-index 0)
+(create-scores *array* validation-set :function-name #'ma-diff-close :output-array-index 0 :start-index 5000 :end-index 10000)
 ;; atrb
-(create-scores *array* validation-set :function-name #'atrb :output-array-index 1)
+(create-scores *array* validation-set :function-name #'atrb :output-array-index 1 :start-index 5000 :end-index 10000)
+
+;;;; Here we shall create the test set data.
+
+(defparameter test-set (make-array '(5000 3))
+  "This is the test set.  The final thing against which the neural net will be compared.")
+
+;;;; Create scores for the test-set
+;; +5close-diff
+(create-scores *array* test-set :function-name #'+5close-diff :output-array-index 2 :start-index 10000 :end-index 15000)
+;; madiff-close
+(create-scores *array* test-set :function-name #'ma-diff-close :output-array-index 0 :start-index 10000 :end-index 15000)
+;; atrb
+(create-scores *array* test-set :function-name #'atrb :output-array-index 1 :start-index 10000 :end-index 15000)
+
+(defun unscore (input raw-data &key function-name (start-index 0) (end-index 5000) (index-shift 20) (min-input -1) (range-input 2))
+  (let* ((max-output (loop for i from (+ start-index index-shift) below (+ end-index index-shift)
+			maximize (funcall function-name (aref raw-data i))))
+	 (min-output (loop for i from (+ start-index index-shift) below (+ end-index index-shift)
+			minimize (funcall function-name (aref raw-data i))))
+	 (range-output (- max-output min-output)))
+    (score input :min-output min-output :range-output range-output :min-input min-input :range-input range-input)))
