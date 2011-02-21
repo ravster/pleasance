@@ -123,3 +123,42 @@
   (loop for i from 0 below 5000
      sum (abs      (- (aref dataset i 2)	      ;Answer we want
 		      (node-output dataset i))))) ;Answer we have right now.
+
+(defun hit? ()
+  "Does the price ever hit the predicted values in the next 5 periods?"
+  (loop for i from 10000 below 15000	;over the test-set
+     with number-of-hits = 0
+     with number-of-misses = 0
+     with predicted-price = 0
+     with predicted-change = 0
+     finally (format t "~&Number of hits = ~A Number of misses = ~A" number-of-hits number-of-misses)
+     do
+     (setf predicted-change (unscore (node-output test-set (- i 10000)) *array* :function-name #'+5close-diff))
+     (setf predicted-price (+ (closeb (aref *array* i)) ;What the price is at present.
+			      predicted-change))
+
+     (if (if (>= predicted-change 0)
+	     (>= (loop for j from i below (+ i 5)
+		    maximize (high (aref *array* j)))
+		 predicted-price) ;Does the price go as high as the predicted price?
+	     (< (loop for j from i below (+ i 5)
+		   minimize (low (aref *array* j)))
+		predicted-price)) ;Does the price go as low as the predicted price?
+	 (incf number-of-hits)
+	 (incf number-of-misses))))
+
+(defun right-direction? ()
+  "Did the NN predict the correct direction of the market for the next 5 periods?"
+  (loop for i from 10000 below 15000
+     with number-right-direction = 0
+     with number-wrong-direction = 0
+     finally (format t "~&Right direction = ~A Wrong direction = ~A" number-right-direction number-wrong-direction)
+     do
+     (if (if (>= (unscore (node-output test-set (- i 10000)) *array* :function-name #'+5close-diff)
+		 0)			;If predicted change is positive
+	     (>= (closeb (aref *array* (+ i 6)))
+		 (closeb (aref *array* i))) ;Is future-close > current-close?
+	     (< (closeb (aref *array* (+ i 6)))
+		(closeb (aref *array* i)))) ;Is future-close < current-close?
+	 (incf number-right-direction)
+	 (incf number-wrong-direction))))
