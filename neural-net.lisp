@@ -138,10 +138,10 @@
 			      predicted-change))
 
      (if (if (>= predicted-change 0)
-	     (>= (loop for j from i below (+ i 5)
+	     (>= (loop for j from (1+ i) upto (+ i 5) ;Because the trade is really taken after the i-th bar ends.
 		    maximize (high (aref *array* j)))
 		 predicted-price) ;Does the price go as high as the predicted price?
-	     (< (loop for j from i below (+ i 5)
+	     (< (loop for j from (1+ i) upto (+ i 5)
 		   minimize (low (aref *array* j)))
 		predicted-price)) ;Does the price go as low as the predicted price?
 	 (incf number-of-hits)
@@ -156,9 +156,9 @@
      do
      (if (if (>= (unscore (node-output test-set (- i 10000)) *array* :function-name #'+5close-diff)
 		 0)			;If predicted change is positive
-	     (>= (closeb (aref *array* (+ i 6)))
+	     (>= (closeb (aref *array* (+ i 5)))
 		 (closeb (aref *array* i))) ;Is future-close > current-close?
-	     (< (closeb (aref *array* (+ i 6)))
+	     (< (closeb (aref *array* (+ i 5)))
 		(closeb (aref *array* i)))) ;Is future-close < current-close?
 	 (incf number-right-direction)
 	 (incf number-wrong-direction))))

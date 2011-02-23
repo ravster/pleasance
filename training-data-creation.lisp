@@ -63,6 +63,7 @@
 (create-scores *array* test-set :function-name #'atrb :output-array-index 1 :start-index 10000 :end-index 15000)
 
 (defun unscore (input raw-data &key function-name (start-index 0) (end-index 5000) (index-shift 20) (min-input -1) (range-input 2))
+  "This is the reciprocal of the score-function.  It takes a min-max score, and then finds out what value that score corresponds to in the real (Non-NN) world."
   (let* ((max-output (loop for i from (+ start-index index-shift) below (+ end-index index-shift)
 			maximize (funcall function-name (aref raw-data i))))
 	 (min-output (loop for i from (+ start-index index-shift) below (+ end-index index-shift)
