@@ -26,41 +26,17 @@
 	   (score (funcall function-name (aref bar-array (+ i index-shift))) 
 		  :min-output min-output :range-output range-output :min-input min-input :range-input range-input))))
 
-(defparameter training-set (make-array '(5000 3))
-  "This is the training set data.")
+(defmacro create-set (set-name start-index end-index)
+  "Create a set of data for the NN"
+  `(progn
+     (defparameter ,set-name (make-array '(5000 3)))
+     (create-scores *array* ,set-name :function-name #'+5close-diff :output-array-index 2 :start-index ,start-index :end-index ,end-index)
+     (create-scores *array* ,set-name :function-name #'atrb :output-array-index 1 :start-index ,start-index :end-index ,end-index)
+     (create-scores *array* ,set-name :function-name #'ma-diff-close :output-array-index 0 :start-index ,start-index :end-index ,end-index)))
 
-;; create scores for MA - close for each bar
-(create-scores *array* training-set :function-name #'ma-diff-close :output-array-index 0)
-;; create scores for atr for each bar
-(create-scores *array* training-set :function-name #'atrb :output-array-index 1)
-;; create scores for +5close - presentclose
-(create-scores *array* training-set :function-name #'+5close-diff :output-array-index 2)
-
-;;;; Here we shall create the validation set data.
-
-(defparameter validation-set (make-array '(5000 3))
-  "This dataset will be the validation set, to make sure we are not overtraining the data.")
-
-;; create scores for validation-set
-;; +5close-diff
-(create-scores *array* validation-set :function-name #'+5close-diff :output-array-index 2 :start-index 5000 :end-index 10000)
-;; madiff-close
-(create-scores *array* validation-set :function-name #'ma-diff-close :output-array-index 0 :start-index 5000 :end-index 10000)
-;; atrb
-(create-scores *array* validation-set :function-name #'atrb :output-array-index 1 :start-index 5000 :end-index 10000)
-
-;;;; Here we shall create the test set data.
-
-(defparameter test-set (make-array '(5000 3))
-  "This is the test set.  The final thing against which the neural net will be compared.")
-
-;;;; Create scores for the test-set
-;; +5close-diff
-(create-scores *array* test-set :function-name #'+5close-diff :output-array-index 2 :start-index 10000 :end-index 15000)
-;; madiff-close
-(create-scores *array* test-set :function-name #'ma-diff-close :output-array-index 0 :start-index 10000 :end-index 15000)
-;; atrb
-(create-scores *array* test-set :function-name #'atrb :output-array-index 1 :start-index 10000 :end-index 15000)
+(create-set training-set 0 5000)
+(create-set validation-set 5000 10000)
+(create-set test-set 10000 15000)
 
 (defun unscore (input raw-data &key function-name (start-index 0) (end-index 5000) (index-shift 20) (min-input -1) (range-input 2))
   "This is the reciprocal of the score-function.  It takes a min-max score, and then finds out what value that score corresponds to in the real (Non-NN) world."
