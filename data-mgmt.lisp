@@ -7,11 +7,18 @@
    (high :initarg :high :reader high :type single-float)
    (low :initarg :low :reader low :type single-float)
    (closeb :initarg :close :reader closeb :type single-float)
-   (sqnb :initform 0 :accessor sqnb)	;SQN of last N bars.
    (atrb :initform 0 :accessor atrb)	;ATR of last N bars.
    (ma-20 :initform 0 :accessor ma-20)	;MA-20 of the close.
    (ma-diff-close :accessor ma-diff-close) ;MA minus close (For NN input).
    (trb :initform 0 :accessor trb)	;TR of this bar.
+   (+dm :initform 0 :accessor +dm)
+   (-dm :initform 0 :accessor -dm)
+   (+di :initform 0 :accessor +di)
+   (-di :initform 0 :accessor -di)
+   (+diavg :initform 0 :accessor +diavg)
+   (-diavg :initform 0 :accessor -diavg)
+   (dmi :initform 0 :accessor dmi)
+   (adx :initform 0 :accessor adx)
    (+5close-diff :initform 0 :accessor +5close-diff)) ;Difference between the close of 5 periods in the future and right now.
   (:documentation "This object defines the price-points and other qualities of a single bar."))
 
@@ -35,5 +42,5 @@
 
 ;Data from http://www.fxhistoricaldata.com/
 
-;; Perform actions
+;; Populate the bar-array.
 (read-ohlc "/home/ravi/trading/GBPUSD_hour.csv" *array*)	;Random - median = $10057 won.  0.04% lose.  Amazing.

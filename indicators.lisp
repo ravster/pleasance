@@ -80,3 +80,78 @@
 	      (closeb (aref raw-data i))))))
 
 (+5close-present *array*)
+
+;; Calculate + & - DMs.
+(defun calc-dm (data)
+  ""
+  (loop for i from 1 below (length data)
+     do
+     (let ((up (- (high (aref data i))		;present high
+		  (high (aref data (1- i)))))	;previous high
+	   (down (- (low (aref data (1- i)))	;previous low
+		    (low (aref data i)))))	;present low
+       (if (> up down)
+	   (if (plusp up)
+	       (setf (+dm (aref data i))
+		     up))
+	   (if (plusp down)
+	       (setf (-dm (aref data i))
+		     down))))))
+
+(calc-dm *array*)
+
+;; Calculate + & - DIs.
+(defun calc-di (data)
+  ""
+  (loop for i from 1 below (length data)
+     do
+     (unless (= 0 (trb (aref data i)))
+       (setf (+di (aref data i))
+	     (/ (+dm (aref data i))
+		(trb (aref data i))))
+       (setf (-di (aref data i))
+	     (/ (-dm (aref data i))
+		(trb (aref data i)))))))
+
+(calc-di *array*)
+
+;; Calculate average DIs.
+(defun calc-avg-di (data n)
+  ""
+  (loop for i from n below (length data)
+     do
+     (setf (+diavg (aref data i))
+	   (/ (loop for j from (- i (1- n)) upto i ;Last n bars (Including i)
+		 sum (+di (aref data j)))
+	      n))
+     (setf (-diavg (aref data i))
+	   (/ (loop for j from (- i (1- n)) upto i ;Last n bars (Including i)
+		 sum (-di (aref data j)))
+	      n))))
+
+(calc-avg-di *array* 14)
+
+;; Calculate DMIs.
+(defun calc-dmi (data n)
+  ""
+  (loop for i from n below (length data)
+     do
+     (let ((bar (aref data i)))
+       (setf (dmi bar)
+	     (/ (abs (- (+diavg bar)
+			(-diavg bar)))
+		(+ (+diavg bar)
+		   (-diavg bar)))))))
+
+(calc-dmi *array* 14)
+
+;; Calculate ADX.
+(defun calc-adx (data n)
+  ""
+  (loop for i from (+ n (1- n))	;Since ADX is moving average of DMI which is moving average of DIs.
+     below (length data)
+     do
+     (setf (adx (aref data i))
+	   (/ (loop for j from (- i (1- n)) upto i
+		 sum (dmi (aref data j)))
+	      n))))
