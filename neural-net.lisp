@@ -109,7 +109,7 @@
 
 (defun work-horse (dataset)
   "This function does the learning.  It updates the weights amongst the nodes."
-  (loop for i from 0 below 5000	;Due to 5000 datum in the training set.
+  (loop for i from 0 below (length dataset)
      do
      ;; Update the weights to the output layer.
        (update-weight-from-hidden-node node-h0 weight-h0 dataset i)
