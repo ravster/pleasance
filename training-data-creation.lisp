@@ -15,7 +15,7 @@
 
 (defun create-scores (bar-array output-array &key (min-output -1) (range-output 2) function-name (index-shift 50) (start-index 0) (end-index 5000) output-array-index)
   "Use the min-max normalization to create scores of input data for the neural network."
-  (loop for i below 5000
+  (loop for i below (- end-index start-index)
      with max-input = (loop for j from (+ start-index index-shift) below (+ end-index index-shift)
 			 maximize (funcall function-name (aref bar-array j)))
      with min-input = (loop for j from (+ start-index index-shift) below (+ end-index index-shift)
@@ -29,17 +29,17 @@
 (defmacro create-set (set-name start-index end-index)
   "Create a set of data for the NN"
   `(progn
-     (defparameter ,set-name (make-array '(5000 4)))
+     (defparameter ,set-name (make-array '(,(- end-index start-index) 4)))
      (create-scores *array* ,set-name :function-name #'+5close-diff :output-array-index 2 :start-index ,start-index :end-index ,end-index)
      (create-scores *array* ,set-name :function-name #'atrb :output-array-index 1 :start-index ,start-index :end-index ,end-index)
      (create-scores *array* ,set-name :function-name #'ma-diff-close :output-array-index 0 :start-index ,start-index :end-index ,end-index)
      (create-scores *array* ,set-name :function-name #'adx :output-array-index 3 :start-index ,start-index :end-index ,end-index)))
 
-(create-set training-set 0 5000)
-(create-set validation-set 5000 10000)
-(create-set test-set 10000 15000)
+(create-set training-set 0 10000)
+(create-set validation-set 10000 15000)
+(create-set test-set 15000 20000)
 
-(defun unscore (input raw-data &key function-name (start-index 0) (end-index 5000) (index-shift 20) (min-input -1) (range-input 2))
+(defun unscore (input raw-data &key function-name (start-index 0) (end-index 5000) (index-shift 50) (min-input -1) (range-input 2))
   "This is the reciprocal of the score-function.  It takes a min-max score, and then finds out what value that score corresponds to in the real (Non-NN) world."
   (let* ((max-output (loop for i from (+ start-index index-shift) below (+ end-index index-shift)
 			maximize (funcall function-name (aref raw-data i))))

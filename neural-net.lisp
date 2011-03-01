@@ -81,9 +81,9 @@
   (tanh (+ (* weight-h0 (node-h0 dataset input-index))
 	   (* weight-h1 (node-h1 dataset input-index))
 	   (* weight-h2 (node-h2 dataset input-index))
-;	   (* weight-h3 (node-h3 dataset input-index))
-;	   (* weight-h4 (node-h4 dataset input-index)))))
-)))
+	   (* weight-h3 (node-h3 dataset input-index))
+	   (* weight-h4 (node-h4 dataset input-index)))))
+;)))
 
 (defun error-gradient-of-output-node (dataset input-index)
   ""
@@ -109,7 +109,7 @@
 
 (defun work-horse (dataset)
   "This function does the learning.  It updates the weights amongst the nodes."
-  (loop for i from 0 below (length dataset)
+  (loop for i from 0 below (array-dimension dataset 0) ;Since dataset is not a vector, but a 2-dimensional array.
      do
      ;; Update the weights to the output layer.
        (update-weight-from-hidden-node node-h0 weight-h0 dataset i)
@@ -141,20 +141,20 @@
 
 (defun aggregate-error-in-set (dataset)
   "This function will find out what the total error is in the training set compared to the currect network output."
-  (loop for i from 0 below 5000
+  (loop for i from 0 below (array-dimension dataset 0)
      sum (abs      (- (aref dataset i 2)	      ;Answer we want
 		      (node-output dataset i))))) ;Answer we have right now.
 
-(defun hit? ()
+(defun hit? (start-index end-index)
   "Does the price ever hit the predicted values in the next 5 periods?"
-  (loop for i from 10000 below 15000	;over the test-set
+  (loop for i from start-index below end-index	;over the test-set
      with number-of-hits = 0
      with number-of-misses = 0
      with predicted-price = 0
      with predicted-change = 0
      finally (format t "~&Number of hits = ~A Number of misses = ~A" number-of-hits number-of-misses)
      do
-     (setf predicted-change (unscore (node-output test-set (- i 10000)) *array* :function-name #'+5close-diff))
+     (setf predicted-change (unscore (node-output test-set (- i start-index)) *array* :function-name #'+5close-diff))
      (setf predicted-price (+ (closeb (aref *array* i)) ;What the price is at present.
 			      predicted-change))
 
@@ -168,14 +168,14 @@
 	 (incf number-of-hits)
 	 (incf number-of-misses))))
 
-(defun right-direction? ()
+(defun right-direction? (start-index end-index)
   "Did the NN predict the correct direction of the market for the next 5 periods?"
-  (loop for i from 10000 below 15000
+  (loop for i from start-index below end-index
      with number-right-direction = 0
      with number-wrong-direction = 0
      finally (format t "~&Right direction = ~A Wrong direction = ~A" number-right-direction number-wrong-direction)
      do
-     (if (if (>= (unscore (node-output test-set (- i 10000)) *array* :function-name #'+5close-diff)
+     (if (if (>= (unscore (node-output test-set (- i start-index)) *array* :function-name #'+5close-diff)
 		 0)			;If predicted change is positive
 	     (>= (closeb (aref *array* (+ i 5)))
 		 (closeb (aref *array* i))) ;Is future-close > current-close?

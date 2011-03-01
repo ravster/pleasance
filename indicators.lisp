@@ -155,3 +155,5 @@
 	   (/ (loop for j from (- i (1- n)) upto i
 		 sum (dmi (aref data j)))
 	      n))))
+
+(calc-adx *array* 14)
