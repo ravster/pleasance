@@ -56,14 +56,6 @@
 
 ;; Define output node.  Same name and parameters used right now so that it plugs into the rest of the code.
 
-(defmacro output-node ()
-  (let ((a ()))
-    (loop for i below numberofhiddennodes do
-	 (push `(* (aref weights-2 ,i)
-		   (funcall (aref hidden-node ,i) dataset input-index))
-	       a))
-    `(tanh (+ ,@a)))) 
-
 (defun node-output (dataset input-index)
   (tanh
    (loop for i below numberofhiddennodes sum (* (aref weights-2 i) 
@@ -84,7 +76,7 @@
        do
        (setf output-node-error-gradient (error-gradient-of-output-node dataset exemplar))
      ;; Calc hiddennode error gradients.  For use with updating weights-1
-       (loop for i below (length hidden-node)	;For all hidden nodes.
+       (loop for i below numberofhiddennodes	;For all hidden nodes.
 	    do
 	    (setf (aref hneg i)
 		  (* (aref weights-2 i)	;Weight of the hidden node
@@ -93,8 +85,8 @@
 		     output-node-error-gradient)))
 
      ;; Update weights-1
-       (loop for input-node-iterator below (array-dimension weights-1 0) do
-	    (loop for hidden-node-iterator below (array-dimension weights-1 1) do
+       (loop for input-node-iterator below numberofinputnodes do
+	    (loop for hidden-node-iterator below numberofhiddennodes do
 		 (incf (aref weights-1 input-node-iterator hidden-node-iterator)
 		       (* rate-of-learning
 			  (funcall (aref input-node input-node-iterator) dataset exemplar)
@@ -102,7 +94,7 @@
 
      ;; Update weights-2.
      ;; We do this after weights-1 to maintain integrity.  Weights-1 is changed on the old weights-2 values, and weights-2 does not depend upon weights-1.
-       (loop for i below (length hidden-node)
+       (loop for i below numberofhiddennodes
 	    do
 	    (incf (aref weights-2 i)
 		  (* rate-of-learning
