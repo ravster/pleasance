@@ -10,5 +10,3 @@
 (load "data-mgmt.lisp")
 (load "indicators.lisp")
 (load "training-data-creation.lisp")
-(load "visual-data-analysis.lisp")
-(load "neural-net.lisp")

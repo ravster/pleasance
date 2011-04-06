@@ -157,3 +157,9 @@
 	      n))))
 
 (calc-adx *array* 14)
+
+(defun aggregate-error-in-set (dataset)
+  "This function will find out what the total error is in the training set compared to the currect network output."
+  (loop for i from 0 below (array-dimension dataset 0)
+     sum (abs      (- (aref dataset i 2)	      ;Answer we want
+		      (node-output dataset i))))) ;Answer we have right now.

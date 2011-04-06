@@ -30,14 +30,14 @@
   "Create a set of data for the NN"
   `(progn
      (defparameter ,set-name (make-array '(,(- end-index start-index) 4)))
-     (create-scores *array* ,set-name :function-name #'+5close-diff :output-array-index 2 :start-index ,start-index :end-index ,end-index)
+     (create-scores *array* ,set-name :function-name #'+5close-diff :output-array-index 0 :start-index ,start-index :end-index ,end-index :min-output -0.9 :range-output 1.8)
      (create-scores *array* ,set-name :function-name #'atrb :output-array-index 1 :start-index ,start-index :end-index ,end-index)
-     (create-scores *array* ,set-name :function-name #'ma-diff-close :output-array-index 0 :start-index ,start-index :end-index ,end-index)
+     (create-scores *array* ,set-name :function-name #'ma-diff-close :output-array-index 2 :start-index ,start-index :end-index ,end-index)
      (create-scores *array* ,set-name :function-name #'adx :output-array-index 3 :start-index ,start-index :end-index ,end-index)))
 
-(create-set training-set 0 10000)
-(create-set validation-set 10000 15000)
-(create-set test-set 15000 20000)
+(create-set training-set 0 1000)
+(create-set validation-set 1500 2000)
+(create-set test-set 1000 1400)
 
 (defun unscore (input raw-data &key function-name (start-index 0) (end-index 5000) (index-shift 50) (min-input -1) (range-input 2))
   "This is the reciprocal of the score-function.  It takes a min-max score, and then finds out what value that score corresponds to in the real (Non-NN) world."

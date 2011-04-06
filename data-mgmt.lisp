@@ -23,7 +23,7 @@
   (:documentation "This object defines the price-points and other qualities of a single bar."))
 
 ;; The data in this vector is ordered from oldest to newest.
-(defparameter *array* (make-array 60000 :fill-pointer 0 :adjustable t :element-type 'bar))
+(defparameter *array* (make-array 4000 :fill-pointer 0 :adjustable t :element-type 'bar))
 
 ;; This function reads in the csv-file and places objects of the 'bar' class into *array*
 (defun read-ohlc (file-name array-name)
@@ -31,7 +31,7 @@
   (let ((temp nil))
     (with-open-file (file file-name)
 	(loop for line = (read-line file nil) ;The 'nil' is so that there is no EOF error.
-	   while line do
+	     repeat (first (array-dimensions array-name)) do ;Fill up the bar-array.
 	     (setf temp (cl-ppcre:split "," line))
 	     (vector-push-extend (make-instance 'bar 
 						:open (read-from-string (fourth temp)) 
@@ -43,4 +43,4 @@
 ;Data from http://www.fxhistoricaldata.com/
 
 ;; Populate the bar-array.
-(read-ohlc "/home/ravi/trading/GBPUSD_hour.csv" *array*)	;Random - median = $10057 won.  0.04% lose.  Amazing.
+(read-ohlc "/home/ravi/trading/GBPUSD_hour.csv" *array*)
