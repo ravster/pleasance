@@ -20,6 +20,7 @@
    (dmi :initform 0 :accessor dmi)
    (adx :initform 0 :accessor adx)
    (stochastic-oscillator :initform 0 :accessor so)
+   (moving-stochastic-oscillator :initform 0 :accessor mso)
    (+5close-diff :initform 0 :accessor +5close-diff)) ;Difference between the close of 5 periods in the future and right now.
   (:documentation "This object defines the price-points and other qualities of a single bar."))
 
