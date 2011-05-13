@@ -29,11 +29,12 @@
 (defmacro create-set (set-name start-index end-index)
   "Create a set of data for the NN"
   `(progn
-     (defparameter ,set-name (make-array '(,(- end-index start-index) 4)))
+     (defparameter ,set-name (make-array '(,(- end-index start-index) 5)))
      (create-scores *array* ,set-name :function-name #'+5close-diff :output-array-index 0 :start-index ,start-index :end-index ,end-index :min-output -0.9 :range-output 1.8)
      (create-scores *array* ,set-name :function-name #'atrb :output-array-index 1 :start-index ,start-index :end-index ,end-index)
      (create-scores *array* ,set-name :function-name #'ma-diff-close :output-array-index 2 :start-index ,start-index :end-index ,end-index)
-     (create-scores *array* ,set-name :function-name #'adx :output-array-index 3 :start-index ,start-index :end-index ,end-index)))
+     (create-scores *array* ,set-name :function-name #'adx :output-array-index 3 :start-index ,start-index :end-index ,end-index)
+     (create-scores *array* ,set-name :function-name #'so :output-array-index 4 :start-index ,start-index :end-index ,end-index)))
 
 (create-set training-set 0 1000)
 (create-set validation-set 1500 2000)

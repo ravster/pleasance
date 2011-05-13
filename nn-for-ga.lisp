@@ -100,17 +100,21 @@
 	   (setf (aref weights-2 i) (random 3)))
 
       ;; Train the network till the validation-set error begins to go up.
-      (work-horse training-set)
-      (let ((previous-validation-error (aggregate-error-in-set validation-set)))
+
+      (let ((previous-validation-error))
 	(loop for i below 2000
-	   while (<= (aggregate-error-in-set validation-set)
-		     previous-validation-error) 
-	   finally (values
-		    (aggregate-error-in-set training-set)
-		    (aggregate-error-in-set test-set))
-	     do
+	   initially 
+	   (work-horse training-set)	
+	   (setf previous-validation-error (aggregate-error-in-set validation-set)) ;To get the first aggregate error amount.
+	   finally (return (list
+			    (aggregate-error-in-set training-set)
+			    (aggregate-error-in-set test-set)))
+	   do
 	   (work-horse training-set)
-	   (setf previous-validation-error (aggregate-error-in-set validation-set))))
+	   (if (< (aggregate-error-in-set validation-set)
+		  previous-validation-error) ;If the new error is less than the old error, set old error to new-error and continue with the next iteration.
+	       (setf previous-validation-error (aggregate-error-in-set validation-set)) ;Update the aggregate error amount.
+	       (loop-finish))))		;End the loop
 
       
 	

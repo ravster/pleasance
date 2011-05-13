@@ -163,3 +163,19 @@
   (loop for i from 0 below (array-dimension dataset 0)
      sum (abs      (- (aref dataset i 2)	      ;Answer we want
 		      (node-output dataset i))))) ;Answer we have right now.
+
+(defun stochastic-oscillator (dataset n)
+  (flet ((lowest-low (i)
+	   (loop for j from (- i n) upto i
+	      minimize (low (aref dataset j))))
+	 (highest-high (i)
+	   (loop for j from (- i n) upto i
+	      maximize (high (aref dataset j)))))
+    (loop for i from n below (length dataset) do
+	 (setf (so (aref dataset i))
+	       (/ (- (closeb (aref dataset i))
+		     (lowest-low i))
+		  (- (highest-high i)
+		     (lowest-low i)))))))
+
+(stochastic-oscillator *array* 20)
