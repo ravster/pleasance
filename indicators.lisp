@@ -183,3 +183,41 @@
 		n))))
 
 (moving-stochastic-oscillator *array* 20)
+
+(defun slow-stochastic-oscillator (dataset n)
+  "Moving average of MSO."
+  (loop for i from (* 3 n) below (length dataset) do
+       (setf (sso (aref dataset i))
+	     (/ (loop for j from (1+ (- i n)) upto i
+		     sum (mso (aref dataset i)))
+		n))))
+
+(slow-stochastic-oscillator *array* 20)
+
+(defun rate-of-change (dataset n)
+  (loop for i from n below (length dataset) do
+       (setf (roc (aref dataset i))
+	     (/ (closeb (aref dataset i))
+		(closeb (aref dataset (- i n)))))))
+
+(rate-of-change *array* 20)
+
+(defun calc-momentum (dataset n)
+  (loop for i from n below (length dataset) do
+       (setf (momentum (aref dataset i))
+	     (- (closeb (aref dataset i))
+		(closeb (aref dataset (- i n)))))))
+
+(calc-momentum *array* 20)
+
+(defun moving-variance (dataset n)
+  (loop for i from n below (length dataset) do
+       (setf (movar (aref dataset i))
+	     (/ (expt (- (closeb (aref dataset i))
+			 (/ (loop for j from (- i n) upto i
+			       sum (closeb (aref dataset j)))
+			    n))
+		      2)
+		n))))
+
+(moving-variance *array* 20)
