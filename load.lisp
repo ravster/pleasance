@@ -10,3 +10,4 @@
 (load "data-mgmt.lisp")
 (load "indicators.lisp")
 (load "training-data-creation.lisp")
+(load "nn-for-ga.lisp")
