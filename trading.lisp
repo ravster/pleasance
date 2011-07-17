@@ -33,9 +33,8 @@
       ;; Over here we are building up the R-values in terms of dollars.  This R-distribution is affected by the position-sizing algorithm.
       (incf sum-of-r-values-in-dollars (/ change-in-dollars R-in-dollars)))))
 
-(defun trades (start-data-point)
+(defun trades (start-data-point end-data-point)
   (do ((i start-data-point (1+ i))
-       (end-data-point (+ start-data-point 4000))
        (opening-price 0)
        (trailing-stop 0)
        (take-profit 0)
@@ -51,7 +50,7 @@
        (minimum-account-balance 10000)
        (r-in-dollars 0)
        (sum-of-r-values-in-dollars 0))
-      ((> i end-data-point)
+      ((= i end-data-point)
        (format t "~&Winning-trades: ~A~&Losing trades: ~A~&Winning pips: ~A~&Losing pips: ~A~&R-expectancy (Pips): ~A~&Profit in $: ~A~&Ending capital: ~A~&Absolute drawdown: ~A~&R-expectancy ($): ~A" num-win num-lose amount-win amount-lose (/ sum-of-r-values-in-pips (+ num-win num-lose)) amount-of-dollars-won capital minimum-account-balance (/ sum-of-r-values-in-dollars (+ num-win num-lose))))
     (if (eql order-type nil)
 	;; If there are no open trades, open one.

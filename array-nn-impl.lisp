@@ -28,6 +28,7 @@
 (defparameter input-node (make-array numberofinputnodes))
 
 (defun define-input-nodes (list-of-set-indexes)
+  "Takes a list of set indices that refer to particular indicators in the sets and maps only those indicators into the input-nodes of the NN."
   (loop for j below (length input-node)
      do
      (let ((i (elt list-of-set-indexes j)))
@@ -71,6 +72,7 @@
 	(node-output dataset input-index)))) ;Answer we have right now.
 
 (defun work-horse (dataset)
+  "This trains the NN.  This counts as 1 epoch."
   (loop for exemplar below (array-dimension dataset 0)
        with output-node-error-gradient = 0
        do

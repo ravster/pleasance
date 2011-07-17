@@ -27,7 +27,7 @@
 		  :min-output min-output :range-output range-output :min-input min-input :range-input range-input))))
 
 (defmacro create-set (set-name start-index end-index)
-  "Create a set of data for the NN"
+  "Create a set of data for the NN.  Start- and end-indexes are for the bar-array with index-shift of 50 datapoints."
   `(progn
      (defparameter ,set-name (make-array '(,(- end-index start-index) 10)))
      (create-scores *array* ,set-name :function-name #'+5close-diff :output-array-index 0 :start-index ,start-index :end-index ,end-index :min-output -0.9 :range-output 1.8)
@@ -46,7 +46,7 @@
 (create-set validation-set 1500 2000)
 (create-set test-set 1000 1400)
 
-(defun unscore (input raw-data &key function-name (start-index 0) (end-index 5000) (index-shift 50) (min-input -1) (range-input 2))
+(defun unscore (input raw-data &key function-name (start-index 0) (end-index 1000) (index-shift 50) (min-input -1) (range-input 2))
   "This is the reciprocal of the score-function.  It takes a min-max score, and then finds out what value that score corresponds to in the real (Non-NN) world."
   (let* ((max-output (loop for i from (+ start-index index-shift) below (+ end-index index-shift)
 			maximize (funcall function-name (aref raw-data i))))
