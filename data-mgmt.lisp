@@ -37,16 +37,18 @@
   (let ((temp nil))
     (with-open-file (file file-name)
 	(loop for line = (read-line file nil) ;The 'nil' is so that there is no EOF error.
+	     while line
 	     repeat (first (array-dimensions array-name)) do ;Fill up the bar-array.
 	     (setf temp (cl-ppcre:split "," line))
 	     (vector-push-extend (make-instance 'bar 
 						:open (read-from-string (fourth temp)) 
-						:high (read-from-string (sixth temp))
-						:low (read-from-string (fifth temp)) 
+						:high (read-from-string (fifth temp))
+						:low (read-from-string (sixth temp)) 
 						:close (read-from-string (seventh temp)))
 				 array-name)))))
 
 ;Data from http://www.fxhistoricaldata.com/
+;forexrate.co.uk
 
 ;; Populate the bar-array.
-(read-ohlc "/home/ravi/trading/GBPUSD_hour.csv" *array*)
+(read-ohlc "/home/ravi/trading/GBPUSD-daily.csv" *array*)

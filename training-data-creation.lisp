@@ -43,7 +43,7 @@
      ))
 
 (create-set training-set 0 1000)
-(create-set validation-set 1500 2000)
+(create-set validation-set 1500 1900)
 (create-set test-set 1000 1400)
 
 (defun unscore (input raw-data &key function-name (start-index 0) (end-index 1000) (index-shift 50) (min-input -1) (range-input 2))
