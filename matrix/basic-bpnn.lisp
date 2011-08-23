@@ -152,7 +152,7 @@ The output of this function is a vector of length (1+ numberofhiddennodes) to re
 		    (grid:gref m0 i)))
 	 (elt+ matrix-sum
 	       (matrix-product m1 (matrix-transpose (x-matrix pattern-index)))))
-    ;; Now we multiply ever element of the matrix-sum by the negative of the learning-rate.
+    ;; Now we multiply every element of the matrix-sum by the negative of the learning-rate.
     ;; Should figure out how to do this using GSLL.  The elt* function doesn't seem to work.
     (loop for i below numberofhiddennodes
        for j below (1+ numberofinputnodes) 

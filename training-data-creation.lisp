@@ -29,7 +29,7 @@
 (defmacro create-set (set-name start-index end-index)
   "Create a set of data for the NN.  Start- and end-indexes are for the bar-array with index-shift of 50 datapoints."
   `(progn
-     (defparameter ,set-name (make-array '(,(- end-index start-index) 10)))
+     (defparameter ,set-name (make-array '(,(- end-index start-index) 13)))
      (create-scores *array* ,set-name :function-name #'+5close-diff :output-array-index 0 :start-index ,start-index :end-index ,end-index :min-output -0.9 :range-output 1.8)
      (create-scores *array* ,set-name :function-name #'atrb :output-array-index 1 :start-index ,start-index :end-index ,end-index)
      (create-scores *array* ,set-name :function-name #'ma-diff-close :output-array-index 2 :start-index ,start-index :end-index ,end-index)
@@ -40,6 +40,9 @@
      (create-scores *array* ,set-name :function-name #'roc :output-array-index 7 :start-index ,start-index :end-index ,end-index)
      (create-scores *array* ,set-name :function-name #'momentum :output-array-index 8 :start-index ,start-index :end-index ,end-index)
      (create-scores *array* ,set-name :function-name #'movar :output-array-index 9 :start-index ,start-index :end-index ,end-index)
+     (create-scores *array* ,set-name :function-name #'disparity-5 :output-array-index 10 :start-index ,start-index :end-index ,end-index)
+     (create-scores *array* ,set-name :function-name #'disparity-10 :output-array-index 11 :start-index ,start-index :end-index ,end-index)
+     (create-scores *array* ,set-name :function-name #'price-oscillator :output-array-index 12 :start-index ,start-index :end-index ,end-index)
      ))
 
 (create-set training-set 0 1000)

@@ -25,6 +25,9 @@
    (rate-of-change :initform 0 :accessor roc)
    (momentum :initform 0 :accessor momentum)
    (moving-variance :initform 0 :accessor movar)
+   (disparity-5 :initform 0 :accessor disparity-5)
+   (disparity-10 :initform 0 :accessor disparity-10)
+   (price-oscillator :initform 0 :accessor price-oscillator)
    (+5close-diff :initform 0 :accessor +5close-diff)) ;Difference between the close of 5 periods in the future and right now.
   (:documentation "This object defines the price-points and other qualities of a single bar."))
 

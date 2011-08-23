@@ -200,7 +200,7 @@
 	     (/ (closeb (aref dataset i))
 		(closeb (aref dataset (- i n)))))))
 
-(rate-of-change *array* 20)
+(rate-of-change *array* 10)
 
 (defun calc-momentum (dataset n)
   (loop for i from n below (length dataset) do
@@ -208,7 +208,7 @@
 	     (- (closeb (aref dataset i))
 		(closeb (aref dataset (- i n)))))))
 
-(calc-momentum *array* 20)
+(calc-momentum *array* 10)
 
 (defun moving-variance (dataset n)
   (loop for i from n below (length dataset) do
@@ -221,3 +221,37 @@
 		n))))
 
 (moving-variance *array* 20)
+
+(defun ma (length-of-average end-point dataset function)
+  "Give the average of the value returned by the function 'function' for 'length-of-average' datapoint ending with the datapoint 'end-point'."
+  (/ (loop for i from (- end-point (1- length-of-average)) upto end-point
+       sum (funcall function (aref dataset i)))
+     length-of-average))
+
+(defun disparity-5-calc (dataset)
+  "Return close/average-of-last-5-closes."
+  (loop for i from 5 below (length dataset) do
+       (setf (disparity-5 (aref dataset i))
+	     (/ (closeb (aref dataset i))
+		(ma 5 i dataset #'closeb)))))
+
+(disparity-5-calc *array*)
+
+(defun disparity-10-calc (dataset)
+  "Return close/average-of-last-10-closes."
+  (loop for i from 10 below (length dataset) do
+       (setf (disparity-10 (aref dataset i))
+	     (/ (closeb (aref dataset i))
+		(ma 10 i dataset #'closeb)))))
+
+(disparity-10-calc *array*)
+
+(defun price-oscillator-calc (dataset)
+  "(MA_5 - MA_10) / MA_5"
+  (loop for i from 10 below (length dataset) do
+       (setf (price-oscillator (aref dataset i))
+	     (/ (- (ma 5 i dataset #'closeb)
+		   (ma 10 i dataset #'closeb))
+		(ma 5 i dataset #'closeb)))))
+
+(price-oscillator-calc *array*)
