@@ -7,12 +7,13 @@
 
 (defun find-fitnesses (chromosome)
   "Take a hash of chromosomes and return their relative fitness-levels in the form of a hash-table"
-  (format t "~&Begin find-fitnesses")
-  (mapc #'(lambda (k)
-	    (setf (second k)
-		  (first (nn (first k)))))
-	chromosome)
-  chromosome)
+  (format t "~&Begin find-fitnesses. chromosome is ~A" chromosome)
+  (mapcar #'(lambda (k)
+	      (setf (second k)
+		    (first (nn (first k))))
+	      k)
+	  chromosome))
+;  (format t "~&find-fitnesses: chromosome: ~A" chromosome)
 
 (defun prune-population (size-of-population chromosome)
   "Take a hash-table and remove 1/3 worst chromosomes."
@@ -33,11 +34,11 @@
 (defun crossover (length-of-chromosome size-of-population population)
   "Take a pruned hash-table.  Effect crossover.  The resulting hash does not have to be full-sized."
   (labels ((do-cross (listorig)
-	   (format t "~&inside do-cross, the population is ~A" listorig)
+;	   (format t "~&inside do-cross, the population is ~A" listorig)
 	   (let* ((list (mapcar #'first listorig))
 		  (p1 (copy-list  (nth (random (length list)) list)))
 		  (p2 (copy-list  (nth (random (length list)) list)))
-		  (cross-point (random (length p1))))
+		  (cross-point (random (length p1)))) ;Since length starts from 1, and #'subseq starts from 0.
 	     (rotatef (subseq p1 cross-point) (subseq p2 cross-point))
 ;	     (format t "~&p1= ~A , p2 = ~A" p1 p2)
 	     (if (member p1 list :test #'equal)
@@ -55,41 +56,23 @@
 
 (defun recursive-mutation (size-of-population population)
   ""
-  (format t "~&in recursive-mutation. population of size ~A is : ~A" (length population) population)
-  (flet ((mutate-chromosome (chromosome)
-	   (let ((i (random (length chromosome))))
-	     (if (zerop (nth i chromosome))
-		 (setf (nth i chromosome) 1)
-		 (setf (nth i chromosome) 0)))))
-    (let ((pop-copy (mapcar #'first population)))
-      (loop while (< (length population)
-		     size-of-population)
-	 with mutation = ()
-	 for i = (nth (random (length pop-copy)) pop-copy) then (nth (random (length pop-copy)) pop-copy)
-	 do
-	 (setf mutation (mutate-chromosome i))
-	 (unless (member mutation population :test #'equal)
-	   (push (list mutation 'mutation) population))
-	 finally (return population)))))
-
-  ;; (check-type chromosome-hash hash-table)
-  ;; (assert (< 0 (hash-table-count chromosome-hash)) (chromosome-hash) "Error in argument to #'recursive-mutation.  Hash-table is empty.")
-  ;; (format t "~&In recursive mutation")
-  ;; (flet ((mutate-chromosome (chromosome)
-  ;; 	   (check-type chromosome list "Within mutate-chromosome within recursive-mutation.  Argument is not a list.")
-  ;; 	   (let ((i (random (length chromosome))))
-  ;; 	     (if (zerop (nth i chromosome))
-  ;; 		 (setf (nth i chromosome) 1)
-  ;; 		 (setf (nth i chromosome) 0)))))
-  ;;   (if (>= (hash-table-count chromosome-hash)
-  ;; 	    size-of-population)
-  ;; 	chromosome-hash	  ;Return the new hash as the next generation.
-  ;; 	(let* ((list-of-chromosomes (copy-list (loop for k being the hash-keys in chromosome-hash collect k)))
-  ;; 	       (i (nth (random (length list-of-chromosomes))
-  ;; 		       list-of-chromosomes))) ;Pick a random chromosome.
-  ;; 	  (setf (gethash (mutate-chromosome i) chromosome-hash)
-  ;; 		nil) ;Place a mutated version of it in the hash-table.
-  ;; 	  (recursive-mutation size-of-population chromosome-hash)))))
+  (labels ((do-mutate (list-0)
+;	     (format t "~&inside do-mutate, the population is ~A" list-0)
+	     (let* ((list (mapcar #'first list-0))
+		    (p1 (copy-list (nth (random (length list)) list)))
+		    (mutate-point (random (length p1)))) ;Since length starts from 1, and we are going to be using this on #'nth, which starts from 0.
+	       (if (zerop (nth mutate-point p1))
+		   (setf (nth mutate-point p1) 1)
+		   (setf (nth mutate-point p1) 0))
+	       (if (member p1 list :test #'equal)
+		   (do-mutate list-0)
+		   p1))))
+    (if (>= (length population)
+	    size-of-population)
+	population
+	(let ((new-key (do-mutate (copy-tree population))))
+	  (format t "~&recursive-mutation returns ~A" (list (list new-key 'mutation) population))
+	  (recursive-mutation size-of-population (push (list new-key 'mutation) population))))))
 
 (defun ga (length-of-chromosome size-of-population number-of-generations)
   "Run the GA through a given number of generations and return a list of chromosomes that made the final cut"
