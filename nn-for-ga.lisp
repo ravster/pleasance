@@ -82,6 +82,18 @@
 	       (loop for i from 0 below (array-dimension dataset 0)
 		  sum (abs (- (aref dataset i 0) ;Answer we want
 			      (output-node dataset i))))) ;Answer we have right now.
+	     (directional-accuracy-in-set (dataset)
+	       "This function finds out accuracy of directional forecasts."
+	       (loop for i from 5 below (array-dimension dataset 0)
+		    with right = 0
+		    and wrong = 0 do
+		    (if (plusp (* (- (aref dataset i 0) ;What it is
+				     (aref dataset (- i 5) 0)) ;What it was
+				  (- (output-node dataset i)   ;What we got
+				     (aref dataset (- i 5) 0)))) ;What it was
+			(incf right)
+			(incf wrong))
+		    finally (return (/ right (+ right wrong)))))
 	     )				;End labels definition
 	
       ;; Create the input-nodes
@@ -108,7 +120,8 @@
 	   (setf previous-validation-error (aggregate-error-in-set validation-set)) ;To get the first aggregate error amount.
 	   finally (return (list
 			    (aggregate-error-in-set training-set)
-			    (aggregate-error-in-set test-set)))
+			    (aggregate-error-in-set test-set)
+			    (directional-accuracy-in-set test-set)))
 	   do
 	   (work-horse training-set)
 	   (if (< (aggregate-error-in-set validation-set)

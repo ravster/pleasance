@@ -10,7 +10,7 @@
   (format t "~&Begin find-fitnesses. chromosome is ~A" chromosome)
   (mapcar #'(lambda (k)
 	      (setf (second k)
-		    (first (nn (first k))))
+		    (third (nn (first k))))
 	      k)
 	  chromosome))
 ;  (format t "~&find-fitnesses: chromosome: ~A" chromosome)
@@ -21,7 +21,7 @@
   (format t "~&In prune-population.  Size of population is : ~A" (length chromosome))
   (format t "~&population is: ~A" chromosome)
   ;; Sort the list
-  (setf chromosome (sort (copy-list chromosome) #'< :key #'second))
+  (setf chromosome (sort (copy-list chromosome) #'> :key #'second))
   (format t "~&Sorted population is: ~A" chromosome)
   ;; Prune the bottom third of the vector
   (loop repeat (* size-of-population 2/3)
