@@ -13,6 +13,15 @@
 	(/ (- input min-input)
 	   range-input))))
 
+(defun unscore (input raw-data &key function-name (start-index 0) (end-index 1000) (index-shift 50) (min-input -1) (range-input 2))
+  "This is the reciprocal of the score-function.  It takes a min-max score, and then finds out what value that score corresponds to in the real (Non-NN) world."
+  (let* ((max-output (loop for i from (+ start-index index-shift) below (+ end-index index-shift)
+			maximize (funcall function-name (aref raw-data i))))
+	 (min-output (loop for i from (+ start-index index-shift) below (+ end-index index-shift)
+			minimize (funcall function-name (aref raw-data i))))
+	 (range-output (- max-output min-output)))
+    (score input :min-output min-output :range-output range-output :min-input min-input :range-input range-input)))
+
 (defun create-scores (bar-array output-array &key (min-output -1) (range-output 2) function-name (index-shift 50) (start-index 0) (end-index 5000) output-array-index)
   "Use the min-max normalization to create scores of input data for the neural network."
   (loop for i below (- end-index start-index)
@@ -48,12 +57,3 @@
 (create-set training-set 0 1000)
 (create-set validation-set 1500 1900)
 (create-set test-set 1000 1400)
-
-(defun unscore (input raw-data &key function-name (start-index 0) (end-index 1000) (index-shift 50) (min-input -1) (range-input 2))
-  "This is the reciprocal of the score-function.  It takes a min-max score, and then finds out what value that score corresponds to in the real (Non-NN) world."
-  (let* ((max-output (loop for i from (+ start-index index-shift) below (+ end-index index-shift)
-			maximize (funcall function-name (aref raw-data i))))
-	 (min-output (loop for i from (+ start-index index-shift) below (+ end-index index-shift)
-			minimize (funcall function-name (aref raw-data i))))
-	 (range-output (- max-output min-output)))
-    (score input :min-output min-output :range-output range-output :min-input min-input :range-input range-input)))

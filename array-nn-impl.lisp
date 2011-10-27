@@ -28,7 +28,7 @@
 (defparameter input-node (make-array numberofinputnodes))
 
 (defun define-input-nodes (list-of-set-indexes)
-  "Takes a list of set indices that refer to particular indicators in the sets and maps only those indicators into the input-nodes of the NN."
+  "Takes a list of set indices that refer to particular indicators in the sets and maps only those indicators into the input-nodes of the NN.  The indices are zero-based and refer to the column vectors of the sets."
   (loop for j below (length input-node)
      do
      (let ((i (elt list-of-set-indexes j)))
@@ -36,7 +36,7 @@
 	     (lambda (dataset input-index)
 	       (aref dataset input-index i))))))
 
-(define-input-nodes '(2 1 3))
+(define-input-nodes '(1 11 12))
 
 ;; Define hidden nodes
 (defparameter hidden-node (make-array numberofhiddennodes))

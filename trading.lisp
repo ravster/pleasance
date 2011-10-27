@@ -84,7 +84,7 @@
 		     take-profit)
 		  (let ((change (- take-profit opening-price)))
 		    (close-trade)
-		    (setf order-type nil)))))		 
+		    (setf order-type nil)))))
 	  (0				     ;If sell order
 	   (cond ((> (high (aref *array* i)) ;If SL is hit, exit with loss.
 		     trailing-stop)

@@ -2,7 +2,7 @@
 (in-package :ravi.matrix0)
 
 ;; Number of inputs and outputs and hidden nodes
-(defparameter numberofinputnodes 5)
+(defparameter numberofinputnodes 3)
 (defparameter numberofhiddennodes 10)
 (defparameter numberofoutputnodes 1)
 
@@ -27,10 +27,8 @@
 (loop for i below (- (length *array*) 50) do
      (setf (grid:gref input-data i 0) 1.0))
 (create-scores *array* input-data :function-name #'atrb :output-array-index 1 :start-index 0 :end-index 3900)
-(create-scores *array* input-data :function-name #'mso :output-array-index 2 :start-index 0 :end-index 3900)
-(create-scores *array* input-data :function-name #'adx :output-array-index 3 :start-index 0 :end-index 3900)
-(create-scores *array* input-data :function-name #'momentum :output-array-index 4 :start-index 0 :end-index 3900)
-(create-scores *array* input-data :function-name #'roc :output-array-index 5 :start-index 0 :end-index 3900)
+(create-scores *array* input-data :function-name #'disparity-10 :output-array-index 2 :start-index 0 :end-index 3900)
+(create-scores *array* input-data :function-name #'price-oscillator :output-array-index 3 :start-index 0 :end-index 3900)
 
 ;; Array for output data
 (defparameter output-data (grid:make-foreign-array 'single-float :dimensions `(,(- (length *array*) 50) ,numberofoutputnodes)))

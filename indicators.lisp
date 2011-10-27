@@ -60,7 +60,7 @@
 
 ;; Calculate moving average difference from close
 (defun ma-difference-from-close (data n)
-  "This will be the signal that we want for input to the NN."
+  "Moving average of the last 20 closes minus the present close."
   (loop for i from n below (length data)
      do
      (setf (ma-diff-close (aref data i))
