@@ -1,3 +1,6 @@
+;; Copyright 2011 Ravi Desai
+;; Distributed under the GNU General Public License version 3 or later.
+
 ;;;; This code creates the training data set that will be used by the neural-net as input.
 
 (in-package :ravi.nn0)

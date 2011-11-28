@@ -1,3 +1,6 @@
+;; Copyright 2011 Ravi Desai
+;; Distributed under the GNU General Public License version 3 or later.
+
 ;; This class holds all the variables that we shall be working with, for each bar of the data.
 
 (in-package :ravi.nn0)

@@ -1,3 +1,6 @@
+;; Copyright 2011 Ravi Desai
+;; Distributed under the GNU General Public License version 3 or later.
+
 ;; Find the true range for each bar and place into object.
 
 (in-package :ravi.nn0)

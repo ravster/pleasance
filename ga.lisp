@@ -1,3 +1,6 @@
+;; Copyright 2011 Ravi Desai
+;; Distributed under the GNU General Public License version 3 or later.
+
 (in-package :ravi.nn0)
 
 (defun make-chromosome (length-of-chromosome)

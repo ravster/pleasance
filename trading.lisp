@@ -34,6 +34,7 @@
       (incf sum-of-r-values-in-dollars (/ change-in-dollars R-in-dollars)))))
 
 (defun trades (start-data-point end-data-point)
+  "This system currently has a t/p and a s/l.  That is it."
   (do ((i start-data-point (1+ i))
        (opening-price 0)
        (trailing-stop 0)
