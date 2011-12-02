@@ -1,5 +1,5 @@
 ;; Set the package
-(in-package :ravi.nn0)
+(in-package :pleasance)
 
 ;; State number of input and hidden nodes
 (defparameter numberofinputnodes 3)

@@ -1,6 +1,6 @@
 ;;;; This file does the simulation of trading and prints out the results.
 
-(in-package :ravi.nn0)
+(in-package :pleasance)
 
 (defun position-size (dollar-amount-willing-to-be-risked number-of-pips-risked)
   "Return the position-size that must be taken, given the dollar amount we are willing to risk and the dollar amount that would have been risked with one full contract."

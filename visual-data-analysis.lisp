@@ -1,6 +1,6 @@
 ;;;; These functions extract some data from the bar-array into a vector, which can then be viewed (As a csv-file) by gnumeric.
 
-(in-package :ravi.nn0)
+(in-package :pleasance)
 
 (defparameter *vector-of-data* (make-array 50000 :fill-pointer 0 :adjustable t :element-type 'float))
 
