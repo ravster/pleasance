@@ -3,7 +3,7 @@
 
 ;; This class holds all the variables that we shall be working with, for each bar of the data.
 
-(in-package :ravi.nn0)
+(in-package :pleasance)
 
 (defclass bar ()
   ((openb :initarg :open :reader openb :type single-float)

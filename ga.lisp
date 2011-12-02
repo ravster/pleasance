@@ -1,7 +1,7 @@
 ;; Copyright 2011 Ravi Desai
 ;; Distributed under the GNU General Public License version 3 or later.
 
-(in-package :ravi.nn0)
+(in-package :pleasance)
 
 (defun make-chromosome (length-of-chromosome)
   "Make a binary chromosome of length 'length-required'."

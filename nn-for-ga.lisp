@@ -4,7 +4,7 @@
 ;;;; This is an NN module for use by the GA.  We give the NN module a chromosome of binary genes defining which input-vectors to use.  The NN module creates a NN, trains it, and then returns the error for the training and the testing sets back to the GA
 ;; This will be all in one defun, and I will be using labels to have locally-defined functions.  I will be making arrays of the weights and nodes to make it flexible from iteration to iteration of the GA.
 
-(in-package :ravi.nn0)
+(in-package :pleasance)
 
 (defun nn (chromosome)
   (let* ((numberofinputnodes (loop for i in chromosome count (= i 1)))

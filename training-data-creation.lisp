@@ -3,7 +3,7 @@
 
 ;;;; This code creates the training data set that will be used by the neural-net as input.
 
-(in-package :ravi.nn0)
+(in-package :pleasance)
 
 ;; Normalize data
 ;; Min-Max normalization
