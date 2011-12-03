@@ -5,4 +5,4 @@
 
 (defpackage :pleasance
   (:use :cl :cl-ppcre)
-  (:export :score :create-scores :*array* :atrb :mso :adx :momentum :roc :+5close-diff :nn :ga))
+  (:export :score :create-scores :*array* :atrb :mso :adx :momentum :roc :+5close-diff :nn :ga :refresh-data))

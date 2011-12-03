@@ -3,22 +3,20 @@
   So far I have built the systems that take in the raw financial data and store it in an array of customized objects.  I also have technical indicators coded that build signals from the raw data.  Then the program parses the signals and re-scales them between -1 and +1 since neural networks (NNs) work best with data that has a common scale.
   At present, the system is able to use the genetic algorithm (GA) on the NNs and find a NN which gets a directional accuracy of nearly 70%.
 ** API
-*** GA
+*** (refresh-data raw-data)
+    'raw-data' is a file-name that contains OHLC data that we are looking at.  It has to be run to load the data into the program.  If you want the program to do what it does on another data-set, just call this function again.
+*** (ga length-of-chromosome size-of-population number-of-generations)
     This function takes in 3 parameters and applies them onto the NN-function.  The parameters in order are the length of each chromosome, the size of the population, and the number of generations to keep running this GA.
     At present we have 12 technical indicators, and you should use that as the value for the length of each chromosome.  I have found that using 30 for the other 2 parameters is good enough to get to the maximum that these NNs can produce (In terms of directional accuracy).
-*** NN
+*** (nn chromosome)
     This function is the basic NN-function.  It takes in a "chromosome" and spits out the stats of that NN's performance after training over 2000 iterations of the data.
     A chromosome is a list composed of 1's and 0's.  These are used to select which technical indicators are used as inputs by the NN.  The entire reason for this system and the GA is because we don't know which indicators are actually useful for predictions and which are noise.
 ** Todo
-*** Remove the hard-coding of the raw-data file.
-    The only input that this program needs is in the form of OHLC (open-high-low-closing) data.  I should make the input file for this not be hard-coded, but as a parameter.  Make the system more modularised.
-    I'm thinking of applying this system to other markets too, and not just the forex market.
 *** Add time as an input
     I feel that this would be useful in making predictions.  I don't know that for sure, though, and will add functionality to the NNs to make sure that it takes time (And days of the week) into account.
 *** Make the inputs more modular
     Right now the system is using hard-coded inputs.  What if I want it to not have only 1 output to compare itself to ("+5close"), but to 2?
-    What if I want to make a system that predicts the high and low for the next week, as opposed to only the close at the end of the week (As it does right now)?
-    Etc., etc.
+    What if I want to make a system that predicts the high and low for the next week, as opposed to only the close at the end of the week (As it does right now)?  Etc., etc.
     The basic point is that there are a lot of things I could try doing with this.  I need to figure out a way to make this more modular.  I have to get rid of the hard-coding.
 ** Misc
 *** Choice of name

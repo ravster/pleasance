@@ -57,6 +57,32 @@
      (create-scores *array* ,set-name :function-name #'price-oscillator :output-array-index 12 :start-index ,start-index :end-index ,end-index)
      ))
 
-(create-set training-set 0 1000)
-(create-set validation-set 1500 1900)
-(create-set test-set 1000 1400)
+(defun refresh-data (raw-data)
+  ;; Populate the bar-array.
+  (read-ohlc raw-data *array*)
+  ;; Start calculating indicators and placing their values in the bar-array.
+  (calculate-true-range *array*)
+  (calculate-atr *array* 20)
+  (moving-average *array* 20)
+  (ma-difference-from-close *array* 20)
+  (+5close-present *array*)
+  (calc-dm *array*)
+  (calc-di *array*)
+  (calc-avg-di *array* 14)
+  (calc-dmi *array* 14)
+  (calc-adx *array* 14)
+  (stochastic-oscillator *array* 20)
+  (moving-stochastic-oscillator *array* 20)
+  (slow-stochastic-oscillator *array* 20)
+  (rate-of-change *array* 10)
+  (calc-momentum *array* 10)
+  (moving-variance *array* 20)
+  (disparity-5-calc *array*)
+  (disparity-10-calc *array*)
+  (price-oscillator-calc *array*)
+  ;; Done calculating the indicators.
+
+  ;; Start scaling the indicators for the NN.
+  (create-set training-set 0 1000)
+  (create-set validation-set 1500 1900)
+  (create-set test-set 1000 1400))

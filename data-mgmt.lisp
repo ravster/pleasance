@@ -55,6 +55,3 @@
 
 ;Data from http://www.fxhistoricaldata.com/
 ;forexrate.co.uk
-
-;; Populate the bar-array.
-(read-ohlc "/home/ravi/trading/GBPUSD-daily.csv" *array*)

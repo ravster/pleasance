@@ -29,9 +29,6 @@
 		(incf sum (trb (aref data x))))
 	      n))))
 
-;; Perform actions
-(calculate-true-range *array*)
-(calculate-atr *array* 20)
 
 ;; This function prints a 1- or 2-dimensional array onto a CSV-file.
 (defun array-to-csv (array csv-file)
@@ -59,8 +56,6 @@
 		(incf sum (closeb (aref data x))))
 	      n))))
 
-(moving-average *array* 20)
-
 ;; Calculate moving average difference from close
 (defun ma-difference-from-close (data n)
   "Moving average of the last 20 closes minus the present close."
@@ -69,8 +64,6 @@
      (setf (ma-diff-close (aref data i))
 	   (- (ma-20 (aref data i))
 	      (closeb (aref data i))))))
-
-(ma-difference-from-close *array* 20)
 
 ;; Calculate Close+5 minus Close
 (defun +5close-present (raw-data)
@@ -81,8 +74,6 @@
      (setf (+5close-diff (aref raw-data i))
 	   (- (closeb (aref raw-data (+ i 5)))
 	      (closeb (aref raw-data i))))))
-
-(+5close-present *array*)
 
 ;; Calculate + & - DMs.
 (defun calc-dm (data)
@@ -101,8 +92,6 @@
 	       (setf (-dm (aref data i))
 		     down))))))
 
-(calc-dm *array*)
-
 ;; Calculate + & - DIs.
 (defun calc-di (data)
   ""
@@ -115,8 +104,6 @@
        (setf (-di (aref data i))
 	     (/ (-dm (aref data i))
 		(trb (aref data i)))))))
-
-(calc-di *array*)
 
 ;; Calculate average DIs.
 (defun calc-avg-di (data n)
@@ -132,8 +119,6 @@
 		 sum (-di (aref data j)))
 	      n))))
 
-(calc-avg-di *array* 14)
-
 ;; Calculate DMIs.
 (defun calc-dmi (data n)
   ""
@@ -146,8 +131,6 @@
 		(+ (+diavg bar)
 		   (-diavg bar)))))))
 
-(calc-dmi *array* 14)
-
 ;; Calculate ADX.
 (defun calc-adx (data n)
   ""
@@ -159,8 +142,7 @@
 		 sum (dmi (aref data j)))
 	      n))))
 
-(calc-adx *array* 14)
-
+;; Calculate stochastics oscillator
 (defun stochastic-oscillator (dataset n)
   (flet ((lowest-low (i)
 	   (loop for j from (- i n) upto i
@@ -175,8 +157,7 @@
 		  (- (highest-high i)
 		     (lowest-low i)))))))
 
-(stochastic-oscillator *array* 20)
-
+;; Calculate moving average of stochastics oscillator.
 (defun moving-stochastic-oscillator (dataset n)
   "Moving average of the stochastic oscillator over 'n' periods."
   (loop for i from (* 2 n) below (length dataset) do ;We are assuming the stochastic oscillator is for the same number of periods, and so a simple doubling works.
@@ -185,8 +166,7 @@
 		     sum (so (aref dataset j)))
 		n))))
 
-(moving-stochastic-oscillator *array* 20)
-
+;; Calculate moving average of the moving average of the stochastics oscillator.
 (defun slow-stochastic-oscillator (dataset n)
   "Moving average of MSO."
   (loop for i from (* 3 n) below (length dataset) do
@@ -195,24 +175,21 @@
 		     sum (mso (aref dataset i)))
 		n))))
 
-(slow-stochastic-oscillator *array* 20)
-
+;; Calculate the rate of change indicator.
 (defun rate-of-change (dataset n)
   (loop for i from n below (length dataset) do
        (setf (roc (aref dataset i))
 	     (/ (closeb (aref dataset i))
 		(closeb (aref dataset (- i n)))))))
 
-(rate-of-change *array* 10)
-
+;; Calculate momentum indicator.
 (defun calc-momentum (dataset n)
   (loop for i from n below (length dataset) do
        (setf (momentum (aref dataset i))
 	     (- (closeb (aref dataset i))
 		(closeb (aref dataset (- i n)))))))
 
-(calc-momentum *array* 10)
-
+;; Calculate moving variance indicator.
 (defun moving-variance (dataset n)
   (loop for i from n below (length dataset) do
        (setf (movar (aref dataset i))
@@ -223,14 +200,14 @@
 		      2)
 		n))))
 
-(moving-variance *array* 20)
-
+;; Function to calculate the average of the last 'length-of-average' datapoints.  To be used with other functions.
 (defun ma (length-of-average end-point dataset function)
-  "Give the average of the value returned by the function 'function' for 'length-of-average' datapoint ending with the datapoint 'end-point'."
+  "Give the average of the value returned by the function 'function' for 'length-of-average' datapoints ending with the datapoint 'end-point'."
   (/ (loop for i from (- end-point (1- length-of-average)) upto end-point
        sum (funcall function (aref dataset i)))
      length-of-average))
 
+;; Calculate the proportion of the close to the average of the last 5 closes.
 (defun disparity-5-calc (dataset)
   "Return close/average-of-last-5-closes."
   (loop for i from 5 below (length dataset) do
@@ -238,16 +215,13 @@
 	     (/ (closeb (aref dataset i))
 		(ma 5 i dataset #'closeb)))))
 
-(disparity-5-calc *array*)
-
+;; Calculate the proportion of the close to the average of the last 10 closes.
 (defun disparity-10-calc (dataset)
   "Return close/average-of-last-10-closes."
   (loop for i from 10 below (length dataset) do
        (setf (disparity-10 (aref dataset i))
 	     (/ (closeb (aref dataset i))
 		(ma 10 i dataset #'closeb)))))
-
-(disparity-10-calc *array*)
 
 (defun price-oscillator-calc (dataset)
   "(MA_5 - MA_10) / MA_5"
@@ -256,5 +230,3 @@
 	     (/ (- (ma 5 i dataset #'closeb)
 		   (ma 10 i dataset #'closeb))
 		(ma 5 i dataset #'closeb)))))
-
-(price-oscillator-calc *array*)
