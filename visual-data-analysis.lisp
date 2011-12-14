@@ -1,3 +1,6 @@
+;; Copyright 2011 Ravi Desai
+;; Distributed under the GNU General Public License version 3 or later.
+
 ;;;; These functions extract some data from the bar-array into a vector, which can then be viewed (As a csv-file) by gnumeric.
 
 (in-package :pleasance)

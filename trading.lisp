@@ -1,3 +1,6 @@
+;; Copyright 2011 Ravi Desai
+;; Distributed under the GNU General Public License version 3 or later.
+
 ;;;; This file does the simulation of trading and prints out the results.
 
 (in-package :pleasance)
