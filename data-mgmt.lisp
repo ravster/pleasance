@@ -36,9 +36,6 @@
    (+5close-diff :initform 0 :accessor +5close-diff)) ;Difference between the close of 5 periods in the future and right now.
   (:documentation "This object defines the price-points and other qualities of a single bar."))
 
-;; The data in this vector is ordered from oldest to newest.
-(defparameter *array* (make-array 4000 :fill-pointer 0 :adjustable t :element-type 'bar))
-
 (defun return-day-&-hour (daystring hourstring)
   "Take a daystring and hourstring and return the numeric day-of-week and hour-of-day."
   (let ((hourlist (cl-ppcre:split ":" hourstring))
@@ -56,16 +53,17 @@
      (third time-list))))
 
 ;; This function reads in the csv-file and places objects of the 'bar' class into *array*
-(defun read-ohlc (file-name array-name)
+(defun read-ohlc (file-name vector-name)
   "This function reads from 'file-name' and puts bar-objects in 'array-name'."
-  (let ((temp nil))
-    (with-open-file (file file-name)
+  (with-open-file (file file-name)
 	(loop for line = (read-line file nil) ;The 'nil' is so that there is no EOF error.
-	     with timestamp = nil
+	      with temp = nil
+	      and timestamp = nil
 	     while line
-	     repeat (first (array-dimensions array-name)) do ;Fill up the bar-array.
-	     (setf temp (cl-ppcre:split "," line))
-	     (setf timestamp (return-day-&-hour (second temp)
+	     repeat (array-dimension vector-name 0)
+	     do ;Fill up the bar-array.
+	     (setf temp (cl-ppcre:split "," line)
+		   timestamp (return-day-&-hour (second temp)
 						(third temp)))
 	     (vector-push-extend (make-instance 'bar
 						:day-of-week (first timestamp)
@@ -74,7 +72,7 @@
 						:high (read-from-string (fifth temp))
 						:low (read-from-string (sixth temp)) 
 						:close (read-from-string (seventh temp)))
-				 array-name)))))
+				 vector-name))))
 
 ;Data from http://www.fxhistoricaldata.com/
 ;forexrate.co.uk
