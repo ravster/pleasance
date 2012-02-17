@@ -124,7 +124,7 @@
 	   finally (return (list
 			    (aggregate-error-in-set training-set)
 			    (aggregate-error-in-set test-set)
-			    (directional-accuracy-in-set test-set)))
+			    (directional-accuracy-in-set validation-set)))
 	   do
 	   (work-horse training-set)
 	   (if (< (aggregate-error-in-set validation-set)
