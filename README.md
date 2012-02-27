@@ -20,9 +20,12 @@ A chromosome is a list composed of 1's and 0's.  These are used to select which 
 
 ### Additional information
 
-As of right now the nn-function is hard-coded to only look at data that is inside the `training-set`, ``validation-set` & `test-set` arrays.  While this can cause confusion when you are dealing with multiple datasets, I don't consider it a big deal since it is so quick to re-calculate all the technical indicators and re-scale the data for each dataset (Especially if we are using daily data; so ~3000 datapoints).
+As of right now the nn-function is hard-coded to only look at data that is inside the `training-set`, `validation-set` & `test-set` arrays.  While this can cause confusion when you are dealing with multiple datasets, I don't consider it a big deal since it is so quick to re-calculate all the technical indicators and re-scale the data for each dataset (Especially if we are using daily data; so ~3000 datapoints).
 
 ## Todo
+### Insert an endurance measure in the final report
+The ga-function presently just prints out the set of chromosomes that made it through the final generation.  I'm thinking that the best chromosomes would be the ones that have lasted for the most time in the gene pool, and I would consider them the best even if they were selected out a few times.  For example, take chromosome A that survived 7 times but didn't make it into the n-th generation (But them might have popped up again).  I would consider this chromosome to be more robust than another chromosome that just showed up in the final generation.  This is something I should look into, even though it doesn't make a lot of sense when viewed from the theory behind genetic algorithms.
+
 ### Make the inputs more modular
 Right now the system is using hard-coded inputs.  What if I want it to not have only 1 output to compare itself to ("+5close"), but to 2?
 
@@ -35,5 +38,4 @@ Currently I have the GA entering only 1 mutation per generation.  This was becau
 This is, however, a cosmetic change in the program since it already nearly gets to 70% directional accuracy.
 
 ## Choice of name
-Pleasance is the home planet of my favourite sci-fi character, Peace Corben.
-This is a part of Larry Niven's Known Space universe, and Corben is introduced in "Teacher's Pet", a story by Matthew Joseph Harrington, and published in the book "Man-Kzin Wars XI" (2005).
+Pleasance is the home planet of my favourite sci-fi character, Peace Corben.  This is a part of Larry Niven's Known Space universe, and Corben is introduced in "Teacher's Pet", a story by Matthew Joseph Harrington, and published in the book "Man-Kzin Wars XI" (2005).

@@ -1,5 +1,5 @@
-;; Copyright 2011 Ravi Desai
-;; Distributed under the GNU General Public License version 3 or later.
+;; Copyright 2011-2012 Ravi Desai <rd7190@gmail.com>
+;; Distributed under the terms of the GNU Affero GPL version 3 or any later version.
 
 ;; This class holds all the variables that we shall be working with, for each bar of the data.
 
@@ -54,7 +54,8 @@
 
 ;; This function reads in the csv-file and places objects of the 'bar' class into *array*
 (defun read-ohlc (file-name vector-name)
-  "This function reads from 'file-name' and puts bar-objects in 'array-name'."
+  "This function reads from 'file-name' and puts bar-objects in 'array-name'.
+The format of input into this function is OHLC.  Modify your data file accordingly."
   (with-open-file (file file-name)
 	(loop for line = (read-line file nil) ;The 'nil' is so that there is no EOF error.
 	      with temp = nil

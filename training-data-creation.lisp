@@ -1,5 +1,5 @@
-;; Copyright 2011 Ravi Desai
-;; Distributed under the GNU General Public License version 3 or later.
+;; Copyright 2011-2012 Ravi Desai <rd7190@gmail.com>
+;; Distributed under the terms of the GNU Affero GPL version 3 or any later version.
 
 ;;;; This code creates the training data set that will be used by the neural-net as input.
 
