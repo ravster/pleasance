@@ -38,24 +38,18 @@
 	   (score (funcall function-name (aref bar-array (+ i index-shift))) 
 		  :min-output min-output :range-output range-output :min-input min-input :range-input range-input))))
 
-(defmacro create-set (data-vector set-name start-index end-index)
-  "Create a set of data for the NN.  Start- and end-indexes are for the bar-array with index-shift of 50 datapoints."
-  `(progn
-     (defparameter ,set-name (make-array '(,(- end-index start-index) 13)))
-     (create-scores data-vector ,set-name :function-name #'+5close-diff :output-array-index 0 :start-index ,start-index :end-index ,end-index :min-output -0.9 :range-output 1.8)
-     (create-scores data-vector ,set-name :function-name #'atrb :output-array-index 1 :start-index ,start-index :end-index ,end-index)
-     (create-scores data-vector ,set-name :function-name #'ma-diff-close :output-array-index 2 :start-index ,start-index :end-index ,end-index)
-     (create-scores data-vector ,set-name :function-name #'adx :output-array-index 3 :start-index ,start-index :end-index ,end-index)
-     (create-scores data-vector ,set-name :function-name #'so :output-array-index 4 :start-index ,start-index :end-index ,end-index)
-     (create-scores data-vector ,set-name :function-name #'mso :output-array-index 5 :start-index ,start-index :end-index ,end-index)
-     (create-scores data-vector ,set-name :function-name #'sso :output-array-index 6 :start-index ,start-index :end-index ,end-index)
-     (create-scores data-vector ,set-name :function-name #'roc :output-array-index 7 :start-index ,start-index :end-index ,end-index)
-     (create-scores data-vector ,set-name :function-name #'momentum :output-array-index 8 :start-index ,start-index :end-index ,end-index)
-     (create-scores data-vector ,set-name :function-name #'movar :output-array-index 9 :start-index ,start-index :end-index ,end-index)
-     (create-scores data-vector ,set-name :function-name #'disparity-5 :output-array-index 10 :start-index ,start-index :end-index ,end-index)
-     (create-scores data-vector ,set-name :function-name #'disparity-10 :output-array-index 11 :start-index ,start-index :end-index ,end-index)
-     (create-scores data-vector ,set-name :function-name #'price-oscillator :output-array-index 12 :start-index ,start-index :end-index ,end-index)
-     ))
+(defparameter *training-functions* (list #'+5close-diff #'atrb #'ma-diff-close #'adx #'so #'mso #'sso #'roc #'momentum #'movar #'disparity-5 #'disparity-10 #'price-oscillator))
+
+(defun create-set (*data-vector* *set-name* start-index end-index *list-of-functions*)
+  "This function will create the datasets that hold the scored (Normalized) data that will be used by the NNs."
+  (loop for function-name in *list-of-functions*
+       for function-count from 0 do
+       (create-scores *data-vector* *set-name* :function-name function-name :output-array-index function-count :start-index start-index :end-index end-index)))
+
+;;; The following defparams are for setting up the datasets of the normalized data.  These names presently have to be used since the nn-function is hard-coded to use them.  And I don't care to change that since re-calculating these things takes practically no time.
+(defparameter training-set nil)
+(defparameter validation-set nil)
+(defparameter test-set nil)
 
 (defun process-data (raw-data data-vector)
   ;; Populate the bar-array.
@@ -83,11 +77,6 @@
   ;; Done calculating the indicators.
 
   ;; Start scaling the indicators for the NN.
-  (create-set data-vector training-set 0 1000)
-  (create-set data-vector validation-set 1500 1900)
-  (create-set data-vector test-set 1000 1400))
-
-(defmacro refresh-data (raw-data data-vector)
-  `(progn
-     (defparameter ,data-vector (make-array 4000 :element-type 'bar :adjustable t :fill-pointer 0))
-     (process-data ,raw-data ,data-vector)))
+  (create-set data-vector training-set 0 1000 *training-functions*)
+  (create-set data-vector validation-set 1500 1900 *training-functions*)
+  (create-set data-vector test-set 1000 1400 *training-functions*))

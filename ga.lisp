@@ -16,7 +16,6 @@
 		    (third (nn (first k))))
 	      k)
 	  chromosome))
-;  (format t "~&find-fitnesses: chromosome: ~A" chromosome)
 
 (defun prune-population (size-of-population chromosome)
   "Take a hash-table and remove 1/3 worst chromosomes."
