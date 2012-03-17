@@ -10,14 +10,19 @@ At present, the system is able to use the genetic algorithm (GA) on the NNs and 
 Use a name of your choosing for the global variable that will hold the OHLC information.  Use the names training-set, validation-set and test-set for the scaled data.  I should probably wrap this up somehow, if I can ever figure out how to make a function create and modify global variables.
 
 Example:
-```commonlisp
+```lisp
 (defparameter *array* (make-array 3000 :element-type 'bar :fill-pointer 0))
 (defparameter training-set (make-array '(2000 13)))
 (defparameter validation-set (make-array '(2000 13)))
 (defparameter test-set (make-array '(2000 13)))
 ```
+
 ### (process-data raw-data data-vector)
-'raw-data' is a file-name that contains OHLC data that we are looking at.  'data-vector' is the name of a globally-accessible (Within the pleasance package) vector that will hold the data from the 'raw-data' file.  This macro has to be run to load the data into the program.  If you want the program to do what it does on another data-set, just call this function again.
+'raw-data' is a file-name that contains OHLC data that we are looking at.  'data-vector' is the name of a globally-accessible (Within the pleasance package) vector that will hold the data from the 'raw-data' file.  This function has to be run to load the data into the program.  After doing this, you have to scale the data for the neural-network
+### (scale-raw-data raw-data train-start train-end validate-start validate-end test-start test-end)
+'raw-data' is the name of the global variable that has the OHLC data in it.  This needs to be scaled for the NN.  The scaling is done in 3 data-sets, `training-set`, `validation-set`, & `test-set`.  The numbers that are the other arguments to this function are the index values in the raw-data that relate to each data-set.  I find that its best to have the test-set right after the training-set in chronological order, while the validation set just has to be over data that is independent of either.
+
+Once this is done you have finished setting up the system.  Have fun with the genetic algorithm.
 ### (ga length-of-chromosome size-of-population number-of-generations)
 This function takes in 3 parameters and applies them onto the NN-function.  The parameters in order are the length of each chromosome, the size of the population, and the number of generations to keep running this GA.
 

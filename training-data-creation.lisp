@@ -75,8 +75,11 @@
   (disparity-10-calc data-vector)
   (price-oscillator-calc data-vector)
   ;; Done calculating the indicators.
+  )
 
+(defun scale-raw-data (data-vector train-start train-end validate-start validate-end test-start test-end)
+  "Scale the raw data from data-vector into the training-, validation, and test-sets.  The other arguments are indexes in the raw-data array that each set of scaled data will relate to."
   ;; Start scaling the indicators for the NN.
-  (create-set data-vector training-set 0 1000 *training-functions*)
-  (create-set data-vector validation-set 1500 1900 *training-functions*)
-  (create-set data-vector test-set 1000 1400 *training-functions*))
+  (create-set data-vector training-set train-start train-end *training-functions*)
+  (create-set data-vector validation-set validate-start validate-end *training-functions*)
+  (create-set data-vector test-set test-start test-end *training-functions*))
