@@ -8,88 +8,118 @@
   (loop repeat length-of-chromosome
      collect (random 2)))
 
-(defun find-fitnesses (chromosome)
+(defun print-hash (hash-table)
+    (let ((foo ""))
+      (maphash #'(lambda (k v)
+		   (setf foo (concatenate 'string foo (format nil "~%~A : ~A" k v))))
+	       hash-table)
+      foo))
+
+(defun find-fitnesses (population)
   "Take a hash of chromosomes and return their relative fitness-levels in the form of a hash-table"
-  (format t "~&Begin find-fitnesses. chromosome is ~A" chromosome)
-  (mapcar #'(lambda (k)
-	      (setf (second k)
-		    (third (nn (first k))))
-	      k)
-	  chromosome))
+  (format t "~&Begin find-fitnesses. population is ~A" population)
+  (loop for k being the hash-key in population do
+       (setf (gethash k population) (third (nn k))))
+  population)
 
-(defun prune-population (size-of-population chromosome)
-  "Take a hash-table and remove 1/3 worst chromosomes."
-  (assert (not (zerop (length chromosome))) (chromosome) "Prune-population: chromosome list is empty.")
-  (format t "~&In prune-population.  Size of population is : ~A" (length chromosome))
-  (format t "~&population is: ~A" chromosome)
-  ;; Sort the list
-  (setf chromosome (sort (copy-list chromosome) #'> :key #'second))
-  (format t "~&Sorted population is: ~A" chromosome)
-  ;; Prune the bottom third of the vector
-  (loop repeat (* size-of-population 2/3)
-     for i in chromosome
-     collect i into pruned-list
-     finally (progn
-	       (format t "~&Pruned list: ~A" pruned-list)
-	       (return pruned-list))))
+(defun prune-population (size-of-population population)
+  "Take a hash-table and reduce it to size-of-population by removing the worst scores."
+  ;; Algorithm:
+  ;; Extract v; sort v; put all k and v from the biggest v into a new hash-table (In descending order of v); return new h-table
+  (format t "~&In prune-population.  Size of population is : ~A" (hash-table-count population))
+  (format t "~&population is: ~A" (print-hash population))
+  (let ((list-of-scores))
+    ;; Put scores in list
+    (loop for value being the hash-values in population do
+	 (push value list-of-scores))
+    ;; sort list-of-scores in descending order.
+    (setf list-of-scores (sort list-of-scores #'>))
+    ;; Return all k & v that match the first 'size-of-population' v's in the sorted list
+    (loop repeat size-of-population
+       for score in list-of-scores
+       with new-hash-table = (make-hash-table :test 'equal) do
+	 (maphash #'(lambda (k v)
+		      (when (= v score)
+			(setf (gethash k new-hash-table) v)))
+		  population)
+	 finally (return new-hash-table))))	 
 
-(defun crossover (length-of-chromosome size-of-population population)
-  "Take a pruned hash-table.  Effect crossover.  The resulting hash does not have to be full-sized."
-  (labels ((do-cross (listorig)
-;	   (format t "~&inside do-cross, the population is ~A" listorig)
-	   (let* ((list (mapcar #'first listorig))
-		  (p1 (copy-list  (nth (random (length list)) list)))
-		  (p2 (copy-list  (nth (random (length list)) list)))
-		  (cross-point (random (length p1)))) ;Since length starts from 1, and #'subseq starts from 0.
-	     (rotatef (subseq p1 cross-point) (subseq p2 cross-point))
-;	     (format t "~&p1= ~A , p2 = ~A" p1 p2)
-	     (if (member p1 list :test #'equal)
-		 (if (member p2 list :test #'equal)
-		     (do-cross (copy-tree listorig))
-		     p2)
-		 p1))))
-    (if (>= (1+ (length population))
-	    size-of-population)
-	;; End crossover and return the filled population.
-	population
-	;; Create a new key and call crossover again with the original key plus the new key.
-	(let ((new-key (do-cross (copy-tree population))))
-	  (crossover length-of-chromosome size-of-population (push (list new-key 'crossover) population))))))
+(defun crossover (size-of-population population)
+  "Take a pruned hash-table.  Effect crossover."
+  ;; Algorithm:
+  ;; make list of all k where the v is numeric; do crossover of those k; put children into hash-table; repeat (recursion);  return h-table that is bigger.  It will be pruned;
+  (format t "~&start crossover: population size: ~a~A" (hash-table-count population) (print-hash population))
+  (flet ((do-cross (original-keys)
+	   ;; Algorithm:
+	   ;; Get a list of keys; identify 2 random keys; identify a cross-point; do the crossover; return the 2 new keys in a list
+	   (let ((origin-key-1 (nth (random (length original-keys))
+				    original-keys))
+		 (origin-key-2 (nth (random (length original-keys))
+				    original-keys))
+		 (cross-point (random (length (first original-keys)))))
+	     (rotatef (subseq origin-key-1 cross-point) (subseq origin-key-2 cross-point))
+	     (list origin-key-1 origin-key-2))))
+    (let ((original-keys))
+      (maphash #'(lambda (k v) ;Make list of all k where the v is numeric.
+		   (if (numberp v)
+		       (push (copy-list k) original-keys)))
+	       population)
+      ;; Put crossover children into new hash-table and return it
+      (loop while (< (hash-table-count population)
+		     (* 4/3 size-of-population)) ;Build the hash-table by 1/3 of its target size.
+	 do
+	 (mapcar #'(lambda (new-key)
+		     ;; If the key does not exist, put it in the hash-table, else leave it alone.
+		     (unless (gethash new-key population)
+		       (setf (gethash new-key population) 'crossover)))
+		 (do-cross (copy-tree original-keys)))
+	   finally (return population)))))
 
-(defun recursive-mutation (size-of-population population)
-  ""
-  (labels ((do-mutate (list-0)
-;	     (format t "~&inside do-mutate, the population is ~A" list-0)
-	     (let* ((list (mapcar #'first list-0))
-		    (p1 (copy-list (nth (random (length list)) list)))
-		    (mutate-point (random (length p1)))) ;Since length starts from 1, and we are going to be using this on #'nth, which starts from 0.
-	       (if (zerop (nth mutate-point p1))
-		   (setf (nth mutate-point p1) 1)
-		   (setf (nth mutate-point p1) 0))
-	       (if (member p1 list :test #'equal)
-		   (do-mutate list-0)
-		   p1))))
-    (if (>= (length population)
-	    size-of-population)
-	population
-	(let ((new-key (do-mutate (copy-tree population))))
-	  (format t "~&recursive-mutation returns ~A" (list (list new-key 'mutation) population))
-	  (recursive-mutation size-of-population (push (list new-key 'mutation) population))))))
+(defun mutation (population)
+  ;; Algorithm:  select chromosomes from hash-table; mutate them; insert mutations into hash-table;  Return a h-table that is bigger.  It will be pruned.
+  (format t "~&Starting mutation.  population is ~a" (print-hash population))
+  (flet ((do-mutate (chromosome)
+	   ;; Algorithm:
+	   ;; Take list of bits; Randomly select a bit; Flip it (1 to 0 or vice-versa); Return new list
+	   (let ((bit-number (random (length chromosome)))) ;The index of the bit that will be flipped.
+	     (if (zerop (nth bit-number chromosome))
+		 (setf (nth bit-number chromosome) 1) ;If 0, set to 1.
+		 (setf (nth bit-number chromosome) 0)) ;If 1, set to 0.
+	     chromosome)))	       ;Return the mutated chromosome.
+    (let ((origin-chromosomes nil))
+      (maphash #'(lambda (k v) ;Only use chromosomes that have survived one generation.
+		   (if (numberp v)
+		       (push k origin-chromosomes)))
+	       population)
+      ;; Mutate chromosomes and enter the unique ones into the hash-table.
+      (loop while (> 3
+		     (loop for v being the hash-values in population
+			  if (eql 'mutation v) count v))
+	   initially (format t "~&origin-chromosomes : ~a" origin-chromosomes)
+	 for new-key = (do-mutate (copy-list (nth (random (length origin-chromosomes))
+						  origin-chromosomes))) ;Mutate a random chromosome that has survived 1 generation.
+	 then (do-mutate (copy-list (nth (random (length origin-chromosomes))
+					 origin-chromosomes)))
+	 do
+	 (unless (gethash new-key population) ;If the mutation doesn't already exist in the population, then add it.
+	   (setf (gethash new-key population) 'mutation)))
+      ;; Return the new hash-table.
+      (format t "~&End mutation: population is ~a" (print-hash population))
+      population)))
 
 (defun ga (length-of-chromosome size-of-population number-of-generations)
   "Run the GA through a given number of generations and return a list of chromosomes that made the final cut"
-    (loop for generation-iterator below number-of-generations
-       with chromosome = ()
-       initially (loop while (< (length chromosome)
-				size-of-population)
-		    with foo = () do
-		      (setf foo (list (make-chromosome length-of-chromosome) t))
-		      (unless (find (first foo) chromosome :test 'equal :key #'first)
-			(push foo chromosome)))
-       do
-       (format t "~&Begin generation: ~A" generation-iterator)
-       (setf chromosome (recursive-mutation size-of-population
-						 (crossover length-of-chromosome size-of-population
-							    (prune-population size-of-population
-									      (find-fitnesses chromosome))))) ;Update the list of chromosomes after selection and crossover.
-       finally (return chromosome)))
+  (loop for generation-iterator below number-of-generations
+     with population = (make-hash-table :test 'equal)
+     ;; Initial population.
+     initially (loop while (< (hash-table-count population)
+			      size-of-population)
+		  do
+		  (setf (gethash (make-chromosome length-of-chromosome) population)
+			t))
+     do
+     (format t "~&Begin generation: ~A" generation-iterator)
+     (setf population (mutation (crossover size-of-population
+					   (prune-population size-of-population
+							     (find-fitnesses population))))) ;Update the list of chromosomes after selection and crossover.
+     finally (return population)))
