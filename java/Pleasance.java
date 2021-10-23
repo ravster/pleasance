@@ -42,6 +42,29 @@ class Pleasance {
 
 		dollarCostAverage();
 		calc_100s();
+		breakout_100();
+	}
+
+	static void breakout_100() {
+		System.out.println("T2 Breakout from highest-high or lowest-low of last 100d.");
+
+		double profit = 0;
+		int max = volumes.size();
+		int buys = 0;
+		int sells = 0;
+		for(int i = 102; i < max - 6; i++) {
+			if (highs.get(i-1) > hh100.get(i-2)) {
+				profit += closes.get(i+5) - opens.get(i);
+				buys++;
+			} else if (lows.get(i-1) < ll100.get(i-2)) {
+				profit += opens.get(i) - closes.get(i+5);
+				sells++;
+			}
+		}
+
+		System.out.println("Buys: " + buys);
+		System.out.println("Sells: " + sells);
+		System.out.println("Profit: " + profit);
 	}
 
 	static void calc_100s() {
