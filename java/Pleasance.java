@@ -5,7 +5,6 @@ import java.lang.Math;
 import java.util.List;
 import java.util.Collections;
 import java.util.Arrays;
-import java.util.Collection;
 
 class Pleasance {
 	static ArrayList<String> dates = new ArrayList<String>(200);
@@ -20,15 +19,15 @@ class Pleasance {
 
 	public static void main(String[] args) throws java.io.IOException {
 		BufferedReader csvReader = new BufferedReader(new FileReader(args[0]));
-		String row;
-		boolean first_row = true;
+		var row = "";
+		var first_row = true;
 		while ((row = csvReader.readLine()) != null) {
 			if (first_row) {
 				first_row = false;
 				continue;
 			}
 
-			String[] data = row.split(",");
+			var data = row.split(",");
 			dates.add(data[0]);
 			opens.add(Double.parseDouble(data[1]));
 			highs.add(Double.parseDouble(data[2]));
@@ -48,10 +47,10 @@ class Pleasance {
 	static void breakout_100() {
 		System.out.println("T2 Breakout from highest-high or lowest-low of last 100d.");
 
-		double profit = 0;
-		int max = volumes.size();
-		int buys = 0;
-		int sells = 0;
+		var profit = 0.0;
+		var max = volumes.size();
+		var buys = 0;
+		var sells = 0;
 		for(int i = 102; i < max - 6; i++) {
 			if (highs.get(i-1) > hh100.get(i-2)) {
 				profit += closes.get(i+5) - opens.get(i);
@@ -68,8 +67,8 @@ class Pleasance {
 	}
 
 	static void calc_100s() {
-		Double[] max_highs = new Double[volumes.size()];
-		Double[] min_lows = new Double[volumes.size()];
+		var max_highs = new Double[volumes.size()];
+		var min_lows = new Double[volumes.size()];
 
 		for (int i = 100; i < volumes.size(); i++) {
 			List<Double> subList = highs.subList(i - 100, i - 1);
