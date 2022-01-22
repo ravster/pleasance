@@ -25,7 +25,7 @@ void process_line(char* line) {
   float exercise = (last+strike-current_price)/current_price;
 
   if ((expire >= 0.01) && (exercise >= 0.01)) {
-    printf("%f, %f, %f, %f, %f, %f\n",
+    printf("%.2f\t %.2f\t %.2f\t %.2f\t %.2f\t %.2f\n",
 	   strike, last, bid, ask,
 	   expire,
 	   exercise);
@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
   current_price = atof(argv[1]);
   char* filename = argv[2];
 
-  printf("strike, last, bid, ask, expire, exercise\n");
+  printf("strike\t last\t bid\t ask\t expire\t exercise\n");
 
   FILE* f = fopen(filename, "r");
   char line[256];
