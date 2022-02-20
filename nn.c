@@ -6,7 +6,7 @@
 #include <math.h>
 
 float *opens, *highs, *lows, *closes;
-float *trs, *atr10s, *hh100s, *ll100s;
+float *trs, *atr10s, *hh100s, *ll100s, *ma;
 int *docs;
 char** dates;
 
@@ -95,10 +95,24 @@ void calc_direction_of_change(int n) {
   }
 }
 
+void calc_moving_average(int n, int period) {
+  ma = (float*)malloc(n * sizeof(float));
+  for(int i = period; i < n; i++) {
+    float sum = 0;
+    for(int j = -period; j <= 0; j++) {
+      sum += closes[i+j];
+    }
+    ma[i] = sum / period;
+  }
+}
+
 int main (int argc, char** argv) {
+  /* validate input */
   if (argc != 2) {
     printf("\nUsage: nn qyld.csv\n");
   }
+
+  /* Load data */
   int num_rows = 3000; // Max rows we want to consider.
   opens = (float*) malloc(num_rows * sizeof(float));
   highs = (float*) malloc(num_rows * sizeof(float));
@@ -110,6 +124,7 @@ int main (int argc, char** argv) {
   calc_true_range(num_rows);
   calc_atr_10(num_rows);
   calc_direction_of_change(num_rows);
+  calc_moving_average(num_rows, 20);
 
   printf("\ndone");
 }
