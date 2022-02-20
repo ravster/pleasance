@@ -96,7 +96,9 @@ void calc_direction_of_change(int n) {
 }
 
 int main (int argc, char** argv) {
-  printf("\n%s, %s\n", argv[0], argv[1]);
+  if (argc != 2) {
+    printf("\nUsage: nn qyld.csv\n");
+  }
   int num_rows = 3000; // Max rows we want to consider.
   opens = (float*) malloc(num_rows * sizeof(float));
   highs = (float*) malloc(num_rows * sizeof(float));
@@ -109,5 +111,5 @@ int main (int argc, char** argv) {
   calc_atr_10(num_rows);
   calc_direction_of_change(num_rows);
 
-  printf("\ndone \n");
+  printf("\ndone");
 }
