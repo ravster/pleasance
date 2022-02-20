@@ -8,18 +8,29 @@
 
 float current_price = 0;
 
-void process_line(char* line) {
+// Splits the string and returns elements 2..5
+void string_2_to_5(float* out, char* in) {
+  char* line = in;
   line = strtok(line, "\t");
   line = strtok(NULL, "\t");
 
   line = strtok(NULL, "\t");
-  float strike = atof(line);
+  out[0] = atof(line);
   line = strtok(NULL, "\t");
-  float last = atof(line);
+  out[1] = atof(line);
   line = strtok(NULL, "\t");
-  float bid = atof(line);
+  out[2] = atof(line);
   line = strtok(NULL, "\t");
-  float ask = atof(line);
+  out[3] = atof(line);
+}
+
+void process_line(char* line) {
+  float vals[4] = {0, 0, 0, 0};
+  string_2_to_5(vals, line);
+  float strike = vals[0];
+  float last = vals[1];
+  float bid = vals[2];
+  float ask = vals[3];
 
   float expire = last/current_price;
   float exercise = (last+strike-current_price)/current_price;
