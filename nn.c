@@ -6,8 +6,7 @@
 #include <math.h>
 
 float *opens, *highs, *lows, *closes;
-float *trs, *atr10s, *hh100s, *ll100s, *ma;
-int *docs;
+float *trs, *atr10s, *ma, *close_plus_15;
 char** dates;
 
 void load_arrs(char* line, int i) {
@@ -76,25 +75,6 @@ void calc_atr_10(int n) {
   }
 }
 
-/*
-1 means yesterday's close was greater than from 5 days ago,
-else 0
- */
-void calc_direction_of_change(int n) {
-  docs = (int*)malloc(n * sizeof(int));
-  for(int i = 5; i < n; i++) {
-    float a, b;
-    a = closes[i-5];
-    b = closes[i-1];
-    if (b > a){
-      docs[i] = 1;
-    }
-    else {
-      docs[i] = 0;
-    }
-  }
-}
-
 void calc_moving_average(int n, int period) {
   ma = (float*)malloc(n * sizeof(float));
   for(int i = period; i < n; i++) {
@@ -103,6 +83,14 @@ void calc_moving_average(int n, int period) {
       sum += closes[i+j];
     }
     ma[i] = sum / period;
+  }
+}
+
+void calc_close_plus_15(int n, int period) {
+  close_plus_15 = (float*)malloc(n * sizeof(float));
+  int last = n-period;
+  for(int i = 0; i < last; i++) {
+    close_plus_15[i] = closes[i + period];
   }
 }
 
@@ -123,8 +111,8 @@ int main (int argc, char** argv) {
 
   calc_true_range(num_rows);
   calc_atr_10(num_rows);
-  calc_direction_of_change(num_rows);
   calc_moving_average(num_rows, 20);
+  calc_close_plus_15(num_rows, 15);
 
   printf("\ndone");
 }
