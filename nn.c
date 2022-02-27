@@ -97,6 +97,11 @@ void calc_close_plus_15(int n, int period) {
   }
 }
 
+/* Normalize value in between 0 and 1. */
+float normalize_0_1(float val, float min, float maxmin_diff) {
+  return (val - min) / maxmin_diff;
+}
+
 int main (int argc, char** argv) {
   /* validate input */
   if (argc != 2) {
