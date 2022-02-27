@@ -122,5 +122,10 @@ int main (int argc, char** argv) {
   calc_moving_average(num_rows, 20);
   calc_close_plus_15(num_rows, 15);
 
+  /* TODO:
+    - Normalize atr10, ma20, and close-plus-15
+    - Move on to building a basic backpropagation NN that handles those to inputs and
+    the one output. KISS */
+
   printf("\ndone");
 }
