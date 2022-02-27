@@ -1,3 +1,6 @@
+// Copyright 2022 Ravi Desai <ravi@ravidesai.com>
+// Distributed under the terms of the GNU Affero GPL version 3 or any later version.
+//
 // gcc -g -Wall -o nn nn.c -lm
 
 #include <stdio.h>
