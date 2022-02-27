@@ -9,7 +9,7 @@
 float current_price = 0;
 
 // Splits the string and returns elements 2..5
-void string_2_to_5(float* out, char* in) {
+void atof_2_to_5(float* out, char* in) {
   char* line = in;
   line = strtok(line, "\t");
   line = strtok(NULL, "\t");
@@ -26,7 +26,7 @@ void string_2_to_5(float* out, char* in) {
 
 void process_line(char* line) {
   float vals[4] = {0, 0, 0, 0};
-  string_2_to_5(vals, line);
+  atof_2_to_5(vals, line);
   float strike = vals[0];
   float last = vals[1];
   float bid = vals[2];
