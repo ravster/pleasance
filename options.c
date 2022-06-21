@@ -32,15 +32,21 @@ void process_line(char* line) {
   float bid = vals[2];
   float ask = vals[3];
 
+  if ((last < bid) || (last > ask)) { 
+    return;
+  }
+
   float expire = last/current_price;
   float exercise = (last+strike-current_price)/current_price;
 
-  if ((expire >= 0.01) && (exercise >= 0.01)) {
-    printf("%.2f\t %.2f\t %.2f\t %.2f\t %.2f\t %.2f\n",
-	   strike, last, bid, ask,
-	   expire,
-	   exercise);
+  if ((expire < 0.01) || (exercise < 0.01)) {
+    return;
   }
+
+  printf("%.2f\t %.2f\t %.2f\t %.2f\t %.2f\t %.2f\n",
+    strike, last, bid, ask,
+    expire,
+    exercise);
 }
 
 int main(int argc, char* argv[]) {
