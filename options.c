@@ -32,7 +32,7 @@ void process_line(char* line) {
   float bid = vals[2];
   float ask = vals[3];
 
-  if ((last < bid) || (last > ask)) { 
+  if ((last < bid) || (last > ask)) {
     return;
   }
 
