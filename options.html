@@ -1,0 +1,114 @@
+<html>
+  <head>
+    <title>ravidesai.com : Eval options chain for covered calls</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  </head>
+    <body>
+      <p>Enter the stock's <ul>
+        <li>current price (if you are trying to get into this stock), or</li>
+        <li>your adjusted cost-basis (if you already have the stock and are looking to collect premium on it)</li>
+      </ul></p>
+      <input type="text" id="current-price" />
+      <p>Paste the Call options-chain from Yahoo Finance in here and then tab out of the input box:</p>
+      <textarea id="call-opt-input"></textarea>
+      <table class="table table-striped">
+        <thead>
+          <th>strike</th>
+          <th>last</th>
+          <th>bid</th>
+          <th>ask</th>
+          <th>expire</th>
+          <th>assign</th>
+        </thead>
+        <tbody id="out"></tbody>
+      </table>
+
+      <h3>Notes</h3>
+      <ul>
+        <li>This is inspired by the Holy Ghost.
+          <ul>
+            <li>Credit where credit's due.</li>
+            <li>I've found that I'm making the best returns on <a href="https://finance.yahoo.com/quote/SWN/options?p=SWN">SWN calls</a></li>
+          </ul>
+        </li>
+        <li>I've used this program (in CLI form) since fall 2021, and it's guided me to picking the right stock at the right prices, to get a return of >2% every month.  That adds up to a >24% return annually, not counting the effects of compounding.</li>
+        <li>I use this by pasting into the textarea the most interesting rows of a call-chain from Yahoo Finance and generally selling options at the strike price that results in the <ul>
+          <li>greatest minimum profit whether the options expire or assign, or</li>
+          <li>just above that (if I feel like taking less profit on the chance the stock will rise a lot but I still want to hold it).</li>
+        </ul></li>
+        <li>When using this to get into a stock, I generally go for something deeper in-the-money so that I'm protected from a fall in stock-price right off the bat.  It's essentially a way to get a discount on the stock, by accepting a higher probability that I'll get assigned and lose the stock (for a profit) at the expiry-date.</li>
+        <li>If the covered-call expires, your cost-basis for the stock has gone down, and you'll have to track that using a spreadsheet yourself.</li>
+      </ul>
+
+      <footer class="text-center">
+        Made with <a href="https://jquery.com/">jQuery</a> & <a href="https://getbootstrap.com/">Bootstrap</a>
+      </footer>
+
+      <script>
+        let current_price = -1
+        $("#current-price").change((ev) => {
+          current_price = ev.target.value;
+        })
+
+        function round2Decimals(num) {
+          /* If we ever deal with negative numbers, remember to save the Math.sign,
+          and then abs, and then round.
+          Because JS is weird about rounding negatives. */
+          return Math.round(num * 100) / 100;
+        }
+
+        function processLine(line) {
+          if (line.length < 10) {
+            return
+          }
+          elements = line.split(/\t/)
+
+          strike = parseFloat(elements[2])
+          last = parseFloat(elements[3])
+          bid = parseFloat(elements[4])
+          ask = parseFloat(elements[5])
+
+          if ((last < bid) || (last > ask)) {
+            return;
+          }
+          expire = round2Decimals(last / current_price)
+          assign = round2Decimals((last + strike - current_price) / current_price)
+          if ((expire < 0.01) || (assign < 0.01)) {
+            return
+          }
+
+          return([strike, last, bid, ask, expire, assign])
+        }
+
+        function outToTrs(vals) {
+          let out = ""
+          vals.forEach((row) => {
+            if (row === undefined) {
+              return
+            }
+            str = `<tr>
+              <td>${row[0]}</td>
+              <td>${row[1]}</td>
+              <td>${row[2]}</td>
+              <td>${row[3]}</td>
+              <td>${row[4]}</td>
+              <td>${row[5]}</td>
+            </tr>`
+            out += str
+          })
+          return out
+        }
+        $("#call-opt-input").change((ev) => {
+          let input = ev.target.value
+          let lines = input.split("\n")
+          let out = []
+          lines.forEach((line) => {
+            out.push(processLine(line))
+          })
+          let trs = outToTrs(out)
+          $("#out").html(trs)
+        })
+      </script>
+    </body>
+</html>
