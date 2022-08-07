@@ -5,6 +5,8 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   </head>
     <body>
+      <h1>Eval options chain for covered calls</h1>
+
       <p>Enter the stock's <ul>
         <li>current price (if you are trying to get into this stock), or</li>
         <li>your adjusted cost-basis (if you already have the stock and are looking to collect premium on it)</li>
@@ -33,6 +35,10 @@
           </ul>
         </li>
         <li>I've used this program (in CLI form) since fall 2021, and it's guided me to picking the right stock at the right prices, to get a return of >2% every month.  That adds up to a >24% return annually, not counting the effects of compounding.</li>
+        <li>
+          <p>The code for this is available in HTML and JS, under the AGPLv3 license.  Please read it and understand it, and ask me questions if you have any.</p>
+          <p>How much better is it to get wisdom than gold! and to get understanding rather to be chosen than silver! - Proverbs 16:16</p>
+        </li>
         <li>I use this by pasting into the textarea the most interesting rows of a call-chain from Yahoo Finance and generally selling options at the strike price that results in the <ul>
           <li>greatest minimum profit whether the options expire or assign, or</li>
           <li>just above that (if I feel like taking less profit on the chance the stock will rise a lot but I still want to hold it).</li>
@@ -42,7 +48,7 @@
       </ul>
 
       <footer class="text-center">
-        Made with <a href="https://jquery.com/">jQuery</a> & <a href="https://getbootstrap.com/">Bootstrap</a>
+        This SPA is made by <a href="http://ravidesai.com">Ravi Desai</a> with <a href="https://jquery.com/">jQuery</a>, <a href="https://getbootstrap.com/">Bootstrap</a> & <a href="https://fedingo.com/how-to-serve-static-files-from-different-folder-in-nginx/">Nginx</a>
       </footer>
 
       <script>
