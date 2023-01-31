@@ -97,6 +97,19 @@ void calc_close_plus_15(int n, int period) {
   }
 }
 
+void calc_min_max(float* min, float* max, float* data, int num_rows, int start, int end) {
+  *min = data[start];
+  *max = data[start];
+  for (int i = start; i < end; i++) {
+    if(data[i] < *min) {
+      *min = data[i];
+    }
+    if(data[i] > *max) {
+      *max = data[i];
+    }
+  }
+}
+
 /* Normalize value in between 0 and 1. */
 float normalize_0_1(float val, float min, float maxmin_diff) {
   return (val - min) / maxmin_diff;
@@ -106,6 +119,7 @@ int main (int argc, char** argv) {
   /* validate input */
   if (argc != 2) {
     printf("\nUsage: nn qyld.csv\n");
+    exit(1);
   }
 
   /* Load data */
@@ -119,13 +133,34 @@ int main (int argc, char** argv) {
 
   calc_true_range(num_rows);
   calc_atr_10(num_rows);
+  float min = 0;
+  float max = 0;
+  calc_min_max(&min, &max, atr10s, num_rows, 10, num_rows);
+  printf("ATR10: min: %f, max %f\n", min, max);
+  float* normalizedAtr10s = (float*) malloc(num_rows * sizeof(float));
+  for(int i = 10; i < num_rows; i++) {
+    float out = normalize_0_1(atr10s[i], min, max - min);
+    normalizedAtr10s[i] = out;
+  }
+
   calc_moving_average(num_rows, 20);
+  min = 0;
+  max = 0;
+  calc_min_max(&min, &max, ma, num_rows, 20, num_rows);
+  printf("MA20: min: %f, max %f\n", min, max);
+  float* normalizedMA20s = (float*) malloc(num_rows * sizeof(float));
+  for(int i = 20; i < num_rows; i++) {
+    float out = normalize_0_1(ma[i], min, max - min);
+    printf("%f\t", out);
+    normalizedMA20s[i] = out;
+  }
+
   calc_close_plus_15(num_rows, 15);
 
-  /* TODO:
+/* TODO:
     - Normalize atr10, ma20, and close-plus-15
     - Move on to building a basic backpropagation NN that handles those to inputs and
     the one output. KISS */
 
-  printf("\ndone");
+  printf("\ndone\n");
 }
