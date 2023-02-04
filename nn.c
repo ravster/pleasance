@@ -136,7 +136,7 @@ int main (int argc, char** argv) {
   float min = 0;
   float max = 0;
   calc_min_max(&min, &max, atr10s, num_rows, 10, num_rows);
-  printf("ATR10: min: %f, max %f\n", min, max);
+  printf("\n\nATR10: min: %f, max %f\n", min, max);
   float* normalizedAtr10s = (float*) malloc(num_rows * sizeof(float));
   for(int i = 10; i < num_rows; i++) {
     float out = normalize_0_1(atr10s[i], min, max - min);
@@ -147,18 +147,27 @@ int main (int argc, char** argv) {
   min = 0;
   max = 0;
   calc_min_max(&min, &max, ma, num_rows, 20, num_rows);
-  printf("MA20: min: %f, max %f\n", min, max);
+  printf("\n\nMA20: min: %f, max %f\n", min, max);
   float* normalizedMA20s = (float*) malloc(num_rows * sizeof(float));
   for(int i = 20; i < num_rows; i++) {
     float out = normalize_0_1(ma[i], min, max - min);
-    printf("%f\t", out);
     normalizedMA20s[i] = out;
   }
 
   calc_close_plus_15(num_rows, 15);
+  min = 0;
+  max = 0;
+  calc_min_max(&min, &max, close_plus_15, num_rows, 0, num_rows - 15);
+  printf("\n\nclose-plus-15: min: %f, max %f\n", min, max);
+  float* normalizedClosePlus15s = (float*) malloc(num_rows * sizeof(float));
+  float last = num_rows - 15;
+  for(int i = 0; i < last; i++) {
+    float out = normalize_0_1(close_plus_15[i], min, max - min);
+    printf("%f\t", out);
+    normalizedClosePlus15s[i] = out;
+  }
 
 /* TODO:
-    - Normalize atr10, ma20, and close-plus-15
     - Move on to building a basic backpropagation NN that handles those to inputs and
     the one output. KISS */
 
