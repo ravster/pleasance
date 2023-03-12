@@ -261,8 +261,18 @@ int main (int argc, char** argv) {
       }
     }
 
-    // TODO:
     // Change weights to out-nodes
+    for(int j = 0; j < num_out_nodes; j++) {
+      for(int k = 0; k < num_mid_nodes; k++) {
+	weights_mid_out[(j * num_mid_nodes) + k] +=
+	  0.003 * // rate of learning
+	  mid_nodes[k] *
+	  output_node_err_gradient; // TODO allow many output nodes
+      }
+    }
+
+    // TODO:
+    // calc total err before and after training, on the training set itself.
   }
 
   printf("done\n");
