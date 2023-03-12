@@ -245,8 +245,23 @@ int main (int argc, char** argv) {
     }
     printf("%f\t%f\t%f\t%f\n", mid_nodes_error_gradients[0], mid_nodes_error_gradients[1], mid_nodes_error_gradients[2], mid_nodes_error_gradients[3]);
 
-    // TODO:
     // Change weights to mid-nodes
+    /*
+    Updating weights from in to mid.  Inputs are:
+    - rate of learning
+    - value of input
+    - mid-node-err-gradient
+    */
+    for(int j = 0; j < num_mid_nodes; j++) {
+      for(int k = 0; k < num_in_nodes; k++) {
+	weights_in_mid[(j * num_in_nodes) + k] +=
+	  0.003 * // rate of learning
+	  in_nodes[k] *
+	  mid_nodes_error_gradients[j];
+      }
+    }
+
+    // TODO:
     // Change weights to out-nodes
   }
 
