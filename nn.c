@@ -177,6 +177,8 @@ int main (int argc, char** argv) {
   int num_mid_nodes = 4;
   int num_out_nodes = 1;
 
+  // This will be num-mid rows and num-in columns.  The first 3 entries will be
+  // i0m0, i1m0, i2m0
   float* weights_in_mid = (float*) malloc(num_in_nodes * num_mid_nodes * sizeof(float));
   float* weights_mid_out = (float*) malloc(num_mid_nodes * num_out_nodes * sizeof(float));
 
@@ -201,6 +203,9 @@ int main (int argc, char** argv) {
     // inputs
     float atr10 = normalizedAtr10s[i];
     float ma20 = normalizedMA20s[i];
+    float* in_nodes = (float*) malloc(sizeof(float) * num_in_nodes);
+    in_nodes[0] = atr10;
+    in_nodes[1] = ma20;
 
     // outputs
     float closePlus15s = normalizedClosePlus15s[i];
@@ -208,14 +213,14 @@ int main (int argc, char** argv) {
     // Calc output of each mid-node
     for(int j = 0; j < num_mid_nodes; j++) {
       float sum = 0;
-      sum += atr10 * weights_in_mid[(j * num_in_nodes) + 0];
-      sum += ma20 * weights_in_mid[(j * num_in_nodes) + 1];
+      for(int k = 0; k < num_in_nodes; k++) {
+	sum += in_nodes[k] * weights_in_mid[(j * num_in_nodes) + k];
+      }
       // TODO same with closing price here.
       mid_nodes[j] = tanh(sum);
     }
 
     // Calc output nodes
-    // TODO check this is row-first.  Does it even matter?
     for(int j = 0; j < num_out_nodes; j++) {
       float sum = 0;
       for(int k = 0; k < num_mid_nodes; k++) {
