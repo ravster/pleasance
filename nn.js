@@ -16,10 +16,10 @@ let closes = [];
 fileContents.split("\n").forEach((line) => {
     let fields = line.split(',')
     dates.push(fields[0])
-    opens.push(fields[1])
-    highs.push(fields[2])
-    lows.push(fields[3])
-    closes.push(fields[4])
+    opens.push(Number(fields[1]))
+    highs.push(Number(fields[2]))
+    lows.push(Number(fields[3]))
+    closes.push(Number(fields[4]))
 })
 
 // Remove the header
@@ -78,5 +78,20 @@ min = foo[0]
 max = foo[1]
 
 let normalizedAtr10s = normalize(atr10s, 11, numRows, min, max - min)
-console.log(Math.max(...normalizedAtr10s.slice(11)))
-console.log(Math.min(...normalizedAtr10s.slice(12)))
+
+let ma20s = new Array(19)
+for(let i = 19; i < numRows; i++) {
+    let sum = 0;
+    for(let j = -19; j <= 0; j++) {
+	sum += closes[i+j];
+    }
+    ma20s.push(sum / 20);
+}
+
+foo = calcMinMax(ma20s, 19, numRows)
+min = foo[0]
+max = foo[1]
+
+let normalizedMa20s = normalize(ma20s, 19, numRows, min, max - min)
+console.log(Math.max(...normalizedMa20s.slice(19)))
+console.log(Math.min(...normalizedMa20s.slice(19)))
