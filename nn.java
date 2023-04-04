@@ -24,6 +24,8 @@ public class nn {
     static Float[] normalizedAtr10s;
     static Float[] ma20s;
     static Float[] normalizedMa20s;
+    static Float[] closePlus15s;
+    static Float[] normalizedClosePlus15s;
 
     static void process_line(String[] line) {
 	var open = Float.parseFloat(line[1]);
@@ -104,6 +106,14 @@ public class nn {
 	ma20sAL.addAll(Arrays.asList(ma20s));
 	normalizedMa20s = normalize(ma20sAL, 19, numRows);
 
-	System.out.println(Arrays.toString(normalizedMa20s));
+	closePlus15s = new Float[numRows];
+	for(var i = 0; i < numRows - 15; i++) {
+	    closePlus15s[i] = closes.get(i);
+	}
+	var closePlus15sAL = new ArrayList<Float>();
+	closePlus15sAL.addAll(Arrays.asList(closePlus15s));
+	normalizedClosePlus15s = normalize(closePlus15sAL, 0, numRows-15);
+
+	System.out.println(Arrays.toString(normalizedClosePlus15s));
     }
 }

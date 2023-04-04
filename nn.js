@@ -93,5 +93,19 @@ min = foo[0]
 max = foo[1]
 
 let normalizedMa20s = normalize(ma20s, 19, numRows, min, max - min)
-console.log(Math.max(...normalizedMa20s.slice(19)))
-console.log(Math.min(...normalizedMa20s.slice(19)))
+
+let closePlus15 = new Array()
+let last = numRows - 15;
+for(let i = 0; i < last; i++) {
+    closePlus15.push(closes[i + 15]);
+}
+
+foo = calcMinMax(closePlus15, 0, numRows - 15)
+min = foo[0]
+max = foo[1]
+
+let normalizedClosePlus15s = normalize(closePlus15, 1, numRows - 15, min, max - min)
+
+
+console.log(Math.max(...normalizedClosePlus15s.slice(0, numRows - 15)))
+console.log(Math.min(...normalizedClosePlus15s.slice(0, numRows - 15)))
