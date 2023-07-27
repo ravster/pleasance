@@ -173,6 +173,9 @@ int main (int argc, char** argv) {
     normalizedClosePlus15s[i] = out;
   }
 
+  // DONE building all the arrays.
+
+  // BEGIN building the neural network.
   int num_in_nodes = 2;
   int num_mid_nodes = 4;
   int num_out_nodes = 1;
@@ -183,16 +186,20 @@ int main (int argc, char** argv) {
   float* weights_mid_out = (float*) malloc(num_mid_nodes * num_out_nodes * sizeof(float));
 
   srand(time(NULL));
+  // Initialize the weights with random values.
   for(int i = 0; i < (num_in_nodes * num_mid_nodes); i++) {
     weights_in_mid[i] = drand48();
   }
   for(int i = 0; i < (num_out_nodes * num_mid_nodes); i++) {
     weights_mid_out[i] = drand48();
   }
+
+  // mid_nodes is the array that represents the middle layer.
   float* mid_nodes = (float*) malloc(sizeof(float) * num_mid_nodes);
   for(int i = 0; i < num_mid_nodes; i++) {
     mid_nodes[i] = 0;
   }
+  // out_nodes represents the output-layer.
   float* out_nodes = (float*) malloc(sizeof(float) * num_out_nodes);
   for(int i = 0; i < num_out_nodes; i++) {
     out_nodes[i] = 0;
