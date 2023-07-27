@@ -106,6 +106,90 @@ max = foo[1]
 
 let normalizedClosePlus15s = normalize(closePlus15, 1, numRows - 15, min, max - min)
 
+// DONE building the data arrays.
+// BEGIN building the neural network.
+
+numInNodes = 2
+numMidNodes = 4
+numOutNodes = 1
+
+// This will be num-mid rows and num-in columns.  The first 3 entries will be
+// i0m0, i1m0, i2m0
+weightsInMid = [];
+weightsMidOut = [];
+for(int i = 0; i < (numInNodes * numMidNodes); i++) {
+    weightsInMid[i] = Math.random();
+}
+for(int i = 0; i < (numOutNodes * numMidNodes); i++) {
+    weightsMidOut[i] = Math.random();
+}
+
+// The middle and outer layer
+midNodes = new Array(numMidNodes);
+outNodes = new Array(numOutNodes);
+
+// TODO should calc total error here, and then again at the end of the training, to see
+// what the improvement has been.
+
+for (i = 0; i < (numRows - 15); i++) {
+    // Doing the full dataset at the moment.  TODO Split to training and testing datasets.
+    inNodes = [
+	normalizedAtr10s[i],
+	normalizedMa20s[i]
+    ]
+    targetOutNodes = [ normalizedClosePlus15s[i] ];
+
+    // Calc midNodes for this datum
+    // The rows represent midNodes and columns represent inNodes.
+    for (j = 0; j < numMidNodes; j++) {
+	sum = 0;
+	for (k = 0; k < numInNodes; k++) {
+	    sum += inNodes[k] * weightsInMid[(j * numInNodes) + k];
+	}
+	midNodes[j] = Math.tanh(sum);
+    }
+
+    // Calc outNodes
+    for (j = 0; j < numOutNodes; j++) {
+	sum = 0;
+	for (k = 0; k < numMidNodes; k++) {
+	    sum += midNodes[k] * weightsMidOut[(j * numOutNodes) + k];
+	}
+	outNodes[j] = Math.tanh(sum);
+    }
+
+    // Calc outNodeErrs
+    outNodeErrGradients = [];
+    // (1 - y^2) is the derivative of the hyperbolic tangent function, and is always
+    // between -1 and 1.
+    for (j = 0; j < numOutNodes; j++) {
+	y = outNodes[j];
+	outNodeErrGradients[j] = (1 - y * y) * (targetOutNodes[j] - y);
+    }
+
+    // Calc midNodeErrs
+    midNodeErrGradients = [];
+    for (j = 0; j < numOutNodes; j++) {
+	for (k = 0; k < numMidNodes; k++) {
+	    midNode = midNodes[k];
+	    midNodeErrGradients[(j * numMidNodes) + k] =
+		weightsMidOut[(j * numMidNodes) + k] *
+		(1 - midNode * midNode) *
+		outNodeErrGradients[j];
+	}
+    }
+
+    // Change weightsInMid
+    for(int j = 0; j < num_mid_nodes; j++) {
+      for(int k = 0; k < num_in_nodes; k++) {
+        weights_in_mid[(j * num_in_nodes) + k] +=
+          0.003 * // rate of learning
+          in_nodes[k] *
+          mid_nodes_error_gradients[j];
+      }
+    }
+
+}
 
 console.log(Math.max(...normalizedClosePlus15s.slice(0, numRows - 15)))
 console.log(Math.min(...normalizedClosePlus15s.slice(0, numRows - 15)))
