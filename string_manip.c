@@ -11,6 +11,44 @@
 #include <stdlib.h>
 #include <string.h>
 
+char*
+prepend(char* base_string, char* other_string) {
+  size_t len_both = strlen(base_string) + strlen(other_string);
+  char* both = malloc(len_both + 10);
+  both[0] = 0;
+
+  strcpy(both, other_string);
+  strcat(both, base_string);
+  return both;
+}
+
+char*
+replace(char* base, char* marker, char* other) {
+  size_t len_both = strlen(base) + strlen(other);
+  char* both = malloc(len_both + 10);
+  both[0] = 0;
+
+  char* marker_pos = strstr(base, marker);
+  size_t len_first_section = marker_pos - base;
+  strncpy(both, base, len_first_section);
+  both[len_first_section] = 0;
+  strcat(both, other);
+  char* second_section = marker_pos + strlen(marker);
+  strcat(both, second_section);
+  return both;
+}
+
+char*
+append(char* base, char* other) {
+  size_t len_both = strlen(base) + strlen(other);
+  char* both = malloc(len_both + 10);
+  both[0] = 0;
+
+  strcpy(both, base);
+  strcat(both, other);
+  return both;
+}
+
 int main(int argc, char* argv[]) {
   if (argc != 4) {
     printf("Usage: ./string_manip \"base with a lot of spaces\" lot other\n");
@@ -22,28 +60,17 @@ int main(int argc, char* argv[]) {
   char* other_string = argv[3];
 
   printf("Prepend\n");
-  size_t len_both = strlen(base_string) + strlen(other_string);
-  char* both = malloc(len_both + 10);
-  both[0] = 0;
-  strcpy(both, other_string);
-  strcat(both, base_string);
-  printf("%s\n\n\n", both);
+  char* out;
+  out = prepend(base_string, other_string);
+  printf("%s\n\n\n", out);
 
   printf("Replace marker\n");
-  both[0] = 0;
-  char* marker_pos = strstr(base_string, marker);
-  size_t len_first_section = marker_pos - base_string;
-  strncpy(both, base_string, len_first_section);
-  both[len_first_section] = 0;
-  strcat(both, other_string);
-  strcat(both, marker_pos + strlen(marker));
-  printf("%s\n\n", both);
+  out = replace(base_string, marker, other_string);
+  printf("%s\n\n", out);
 
   printf("Append\n");
-  both[0] = 0;
-  strcpy(both, base_string);
-  strcat(both, other_string);
-  printf("%s\n\n", both);
+  out = append(base_string, other_string);
+  printf("%s\n\n", out);
 
   return(0);
 }
