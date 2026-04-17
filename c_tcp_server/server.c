@@ -23,10 +23,10 @@ handle_request(void* client_socket_ptr) {
 		buf[bytes_read] = 0;
 		printf("Received %s\n", buf);
 		char* out = malloc(256);
-		sprintf(out, "This is thread %p.\nYou said %s.\nMy response is %p",
+		sprintf(out, "This is thread %p.\nYou said %s.\n",
 				(void*)pthread_self(),
-				buf,
-				&out);
+				buf
+				);
 		write(client_socket, out, strlen(out));
 	}
 
