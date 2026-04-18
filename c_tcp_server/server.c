@@ -18,10 +18,28 @@ handle_request(void* client_socket_ptr) {
 	free(client_socket_ptr);
 	char buf[1024];
 	int bytes_read = read(client_socket, buf, 1023);
+	buf[bytes_read] = 0;
 
 	if (bytes_read > 0) {
-		buf[bytes_read] = 0;
 		printf("Received %s\n", buf);
+		char* input = buf;
+		char* first = strsep(&input, "\x1f");
+		char* second = strsep(&input, "\x1f");
+		int code = atoi(second);
+		char* resp = malloc(32);
+		switch (code) {
+			case 1:
+				resp = "foo";
+				break;
+			case 2:
+				resp = "bar";
+				break;
+			default:
+				resp = "baz";
+		}
+		printf("1: %s\n2: %s\nResult: %s\n", first, second, resp);
+
+		// Response
 		char* out = malloc(256);
 		write(client_socket, out, strlen(out));
 	}
