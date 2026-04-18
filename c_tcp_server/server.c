@@ -52,10 +52,11 @@ int
 main() {
 	int server_fd = listen_on_port();
 	while (1) {
+		// Build up client socket.
 		struct sockaddr_in client_addr;
 		socklen_t addr_len = sizeof(client_addr);
-
 		int* new_socket = malloc(sizeof(int));
+		// This blocks till a connection comes through. Easy.
 		// In happy path, new_socket is freed by the worker thread.
 		*new_socket = accept(server_fd, (struct sockaddr*)&client_addr, &addr_len);
 		if (*new_socket < 0) {
@@ -73,7 +74,8 @@ main() {
 			close(*new_socket);
 			free(new_socket);
 		} else {
-			// We don't want it to be a zombie thread after it's done working.
+			// Thread successfully made. We don't want it to be a zombie after it's done
+			// work, so set it to clean up after it finishes execution.
 			pthread_detach(thread_id);
 		}
 	}
