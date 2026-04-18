@@ -23,10 +23,6 @@ handle_request(void* client_socket_ptr) {
 		buf[bytes_read] = 0;
 		printf("Received %s\n", buf);
 		char* out = malloc(256);
-		sprintf(out, "This is thread %p.\nYou said %s.\n",
-				(void*)pthread_self(),
-				buf
-				);
 		write(client_socket, out, strlen(out));
 	}
 
@@ -35,7 +31,7 @@ handle_request(void* client_socket_ptr) {
 }
 
 int
-main() {
+listen_on_port() {
 	int server_fd;
 	struct sockaddr_in address;
 	int opt = 1;
@@ -49,6 +45,12 @@ main() {
 	listen(server_fd, 100);
 	printf("Server listening on port %d...\n", PORT);
 
+	return server_fd;
+}
+
+int
+main() {
+	int server_fd = listen_on_port();
 	while (1) {
 		struct sockaddr_in client_addr;
 		socklen_t addr_len = sizeof(client_addr);
@@ -71,7 +73,6 @@ main() {
 			close(*new_socket);
 			free(new_socket);
 		} else {
-			printf("Fired off thread\n");
 			// We don't want it to be a zombie thread after it's done working.
 			pthread_detach(thread_id);
 		}
