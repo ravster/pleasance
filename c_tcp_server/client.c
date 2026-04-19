@@ -29,7 +29,7 @@ handle_connection(void* thread_id_ptr) {
 
 	// Send msg
 	char msg[30] = {0};
-	sprintf(msg, "Msg from thread %d.\x1F%d", thread_id, thread_id);
+	sprintf(msg, "Msg from thread %d.\t%d", thread_id, thread_id);
 	send(sock, msg, strlen(msg), 0);
 
 	// Rcv response
@@ -57,6 +57,6 @@ main() {
 		pthread_join(threads[i], NULL);
 	}
 
-	printf("All threads done");
+	printf("All threads done\n");
 	return 0;
 }

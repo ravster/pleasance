@@ -8,8 +8,33 @@
 // gcc server.c -o run -lpthread
 // Test with
 // echo "hghghg" | nc localhost 3003
+// or better yet, use the client program in this dir.
 
 #define PORT 3003
+
+/*
+ * Returns the number of splits.
+ * Writes into the out param, which is already malloc'd.
+ */
+int
+string_split(char* in, char** out, char* delim, int max_count) {
+	char* saveptr;
+	int count = 0;
+	char* substring = strtok_r(in, delim, &saveptr);
+
+	while (substring != NULL) {
+		printf("in loop. substring=%s\n", substring);
+		out[count] = substring;
+		++count;
+		if (count == max_count) {
+			// We allocated only this much.
+			break;
+		}
+		substring = strtok_r(NULL, delim, &saveptr);
+	}
+	printf("count %d\n", count);
+	return count;
+}
 
 // This function is run in a thread, to handle the request.
 void*
@@ -22,10 +47,21 @@ handle_request(void* client_socket_ptr) {
 
 	if (bytes_read > 0) {
 		printf("Received %s\n", buf);
-		char* input = buf;
-		char* first = strsep(&input, "\x1f");
-		char* second = strsep(&input, "\x1f");
+
+		// String split
+		char** strings = calloc(20, sizeof(char*));
+		int string_count = 0;
+		string_count = string_split(buf, strings, "\t", 20);
+
+		if (string_count < 2) {
+			fprintf(stderr, "Invalid string count:%d from string:%s\n", string_count, buf);
+			close(client_socket);
+			return NULL;
+		}
+		char* first = strings[0];
+		char* second = strings[1];
 		int code = atoi(second);
+
 		char* resp = malloc(32);
 		switch (code) {
 			case 1:
@@ -41,6 +77,7 @@ handle_request(void* client_socket_ptr) {
 
 		// Response
 		char* out = malloc(256);
+		out = resp;
 		write(client_socket, out, strlen(out));
 	}
 
