@@ -54,7 +54,11 @@ handle_request(void* client_socket_ptr) {
 		string_count = string_split(buf, strings, "\t", 20);
 
 		if (string_count < 2) {
-			fprintf(stderr, "Invalid string count:%d from string:%s\n", string_count, buf);
+			char* errmsg;
+			asprintf(&errmsg, "Invalid string count:%d from string:%s\n", string_count, buf);
+			fprintf(stderr, "%s", errmsg);
+			dprintf(client_socket, "%s", errmsg);
+			free(errmsg);
 			close(client_socket);
 			return NULL;
 		}
