@@ -124,6 +124,11 @@ main() {
 			continue;
 		}
 
+		// TODO: Instead of making a new OS thread, make a thread-pool.
+		// Create a queue.
+		// Then make 4-8 threads and have them read from the queue.
+		// When a new client-socket is made, push that into the queue.
+		// Figure out the pthreads way to wake all or some of the threads in the pool.
 		// Make new thread to handle request.
 		pthread_t thread_id;
 		int err = 0;
